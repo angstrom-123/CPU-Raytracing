@@ -19,12 +19,26 @@ public class Renderer extends JFrame{
     private ImagePanel imgPanel;
     private JFrame frame = new JFrame();
 
+    private InputHandler handler;
+
     public Renderer(int w, int h) {
         width = w;
         height = h;
         pixels = new int[w * h];
         img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         imgPanel = new ImagePanel(img);
+
+        initWindow();
+    }
+
+    public Renderer(int w, int h, InputHandler handler) {
+        width = w;
+        height = h;
+        pixels = new int[w * h];
+        img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        imgPanel = new ImagePanel(img);
+
+        this.handler = handler;
 
         initWindow();
     }
@@ -39,6 +53,13 @@ public class Renderer extends JFrame{
                 frame.dispose();
             }
         });
+        imgPanel.addKeyListener(handler);
+        imgPanel.setFocusable(true);
+        imgPanel.requestFocusInWindow();
+    }
+
+    public void clear() {
+        frame.dispose();
     }
 
     public void writePixel(Vector3 unitColour) {
@@ -81,12 +102,12 @@ public class Renderer extends JFrame{
     }
 
     public void saveFile(String path) {
-        File file = new File("/renders/"+path+String.valueOf(Math.random()).substring(2)+".png");
+        File file = new File("renders/"+path+String.valueOf(Math.random()).substring(2)+".png");
         try {
             ImageIO.write(img, "png", file);
         } catch (IOException e) {
             System.out.println("exception in save file");
         }
-        frame.dispose();
+        // frame.dispose();
     }
 }

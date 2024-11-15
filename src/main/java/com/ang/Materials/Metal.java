@@ -15,6 +15,11 @@ public class Metal extends Material {
     }
 
     @Override
+    public Vector3 getAlbedo() {
+        return albedo;
+    }
+
+    @Override
     public boolean scatter(Ray rIn, HitRecord rec, RayTracker rt) {
         Vector3 scatterDirection = Vector3.reflect(rIn.direction(), rec.normal);
         scatterDirection = scatterDirection.unitVector().add(Vector3.randomUnitVector().multiply(fuzziness));

@@ -5,7 +5,9 @@ public class Global {
     public final static double infinity = Double.MAX_VALUE;
     public final static double pi = 3.1415926535897932385;
 
-    public static double counter = 0;
+    public static double hits = 0;
+    public static double bBoxHits = 0;
+    public static double count = 0;
 
     // util
     public static double deg2rad(double degrees) {

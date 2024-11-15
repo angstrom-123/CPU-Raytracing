@@ -6,37 +6,44 @@ import com.ang.Utils.HitRecord;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Ray;
 
-import com.ang.Global;
-
-public class HierarchyNode extends Hittable{
+public class BVHNode extends Hittable{
     private Hittable left;
     private Hittable right;
-    private AABB bBox;
+    private AABB bBox = null;
 
     // auto defines list size and start index
-    public HierarchyNode(HittableList list) {
+    public BVHNode(HittableList list) {
         this(list.hittables, 0, list.size());
     }
 
-    public HierarchyNode(Hittable[] objects, int start, int end) {
+    public BVHNode(Hittable[] objects, int start, int end) {
         int span = end - start;
+
+        bBox = AABB.empty();
+        for (int i = start; i < end; i++) {
+            this.bBox = new AABB(this.bBox, objects[i].bBox());
+        }
+
+        int axis = bBox.largestAxis();
 
         switch (span) {
             case 1:
                 left = right = objects[start];
+                // Global.count++;
                 break;
             case 2:
                 left = objects[start];
                 right = objects[start + 1];
+                // Global.count += 2;
                 break;
-            default:  
-                // sort the objects by bounding box size
-                Hittable[] sorted = AABBSorter.sort(objects, objects[start].bBox().largestAxis(), start, end, span);
-                
+            default:
+                objects = AABBSorter.sort(objects, axis, start, end);
+
                 // set left, right, and recurse down children
                 int mid = start + span / 2;
-                left = new HierarchyNode(sorted, start, mid);
-                right = new HierarchyNode(sorted, mid, end);
+                left = new BVHNode(objects, start, mid);
+                right = new BVHNode(objects, mid, end);
+
                 break;
         }
 
@@ -48,13 +55,17 @@ public class HierarchyNode extends Hittable{
     // if hit outer bBox, looks deeper to see if it hit child bBoxes
     // returns false if it missed, true if it hit any child
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
-        Global.counter++;
-        if (!bBox.hit(r, tInterval)) {
+        if (!bBox.hit(r, tInterval, rec)) {
             return false;
         }
 
         boolean hitLeft = left.hit(r, tInterval, rec);
-        boolean hitRight = right.hit(r, tInterval, rec);
+        // boolean hitRight = right.hit(r, new Interval(), rec);
+        boolean hitRight;
+        if (hitLeft) {
+            hitRight = right.hit(r, new Interval(tInterval.min, rec.t), rec);
+        }
+        hitRight = right.hit(r, tInterval, rec);
 
         return hitLeft || hitRight;
     }

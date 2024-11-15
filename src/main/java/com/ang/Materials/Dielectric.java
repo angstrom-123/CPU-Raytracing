@@ -20,6 +20,11 @@ public class Dielectric extends Material{
     }
 
     @Override
+    public Vector3 getAlbedo() {
+        return albedo;
+    }
+
+    @Override
     public boolean scatter(Ray rIn, HitRecord rec, RayTracker rt) {
         double ri;
         if (rec.frontFace) {

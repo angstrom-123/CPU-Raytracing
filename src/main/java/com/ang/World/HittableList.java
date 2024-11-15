@@ -18,7 +18,7 @@ public class HittableList {
 
     public void add(Hittable h) {
         hittables[arrayIndex] = h;
-        bBox = new AABB(this.bBox, h.bBox());
+        this.bBox = new AABB(this.bBox, h.bBox());
         arrayIndex++;
     }
 
@@ -28,12 +28,7 @@ public class HittableList {
     }
 
     public int size() {
-        for (int i = 0; i < maxHittables; i++) {
-            if (hittables[i] == null) {
-                return i;
-            }
-        }
-        return maxHittables;
+        return arrayIndex;
     }
 
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
@@ -58,5 +53,9 @@ public class HittableList {
         }
 
         return hitAnything;
+    }
+
+    public AABB bBox() {
+        return bBox;
     }
 }

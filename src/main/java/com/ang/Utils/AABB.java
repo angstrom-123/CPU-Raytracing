@@ -1,9 +1,11 @@
 package com.ang.Utils;
 
 import com.ang.Global;
+import com.ang.Materials.*;
 
 public class AABB {
     public Interval x, y, z;
+    public Material mat = new Transmitter(new Vector3(1,0,0));
 
     public AABB() {
         x = new Interval();
@@ -16,6 +18,9 @@ public class AABB {
         this.x = x;
         this.y = y;
         this.z = z;
+
+        // System.out.println(axisInterval(largestAxis()).size());
+        Global.count++;
     }
 
     // define in terms of 3d coords of corners
@@ -38,13 +43,16 @@ public class AABB {
         } else {
             z = new Interval(b.z(), a.z());
         }
+
+        // System.out.println(axisInterval(largestAxis()).size());
+        Global.count++;
     }
 
     // define in terms of multiple bBoxes
     public AABB(AABB box0, AABB box1) {
-        x = new Interval(box0.x, box1.x);
-        y = new Interval(box0.y, box1.y);
-        z = new Interval(box0.z, box1.z);
+        x = new Interval(box0.x, box1.x).expand(0.001);
+        y = new Interval(box0.y, box1.y).expand(0.001);
+        z = new Interval(box0.z, box1.z).expand(0.001);
     }
 
     public Interval axisInterval(int n) {
@@ -68,9 +76,8 @@ public class AABB {
         return 2; // z
     }
 
-    public boolean hit(Ray r, Interval tInterval) {
-        Global.counter++;
-
+    // tInterval not updating?
+    public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
         Vector3 rayOrigin = r.origin();
         Vector3 rayDir = r.direction();
 
@@ -81,31 +88,54 @@ public class AABB {
             double t0 = (axIn.min - rayOrigin.e[axis]) * axDirInv;
             double t1 = (axIn.max - rayOrigin.e[axis]) * axDirInv;
 
+            // double t0 = 
+            // System.out.println("min max "+tInterval.min+" "+tInterval.max);
             if (t0 < t1) {
                 if (t0 > tInterval.min) {
                     // tMin = t0
                     tInterval.setMin(t0);
+                    // System.out.println("set1");
                 }
                 if (t1 < tInterval.max) {
                     // tMax = t1
                     tInterval.setMax(t1);
+                    // System.out.println("set2");
                 } 
             } else {
                 if (t1 > tInterval.min) {
                     // tMin = t1
                     tInterval.setMin(t1);
+                    // System.out.println("set3");
                 }
                 if (t0 < tInterval.max) {
                     // tMax = t0
                     tInterval.setMax(t0);
+                    // System.out.println("set4");
                 }
             }
+            // System.out.println("min max after "+tInterval.min+" "+tInterval.max);
 
             if (tInterval.max <= tInterval.min) {
                 return false;
             }
         }
+        rec.t = tInterval.min;
+        rec.p = r.at(rec.t);
 
+        Vector3 outwardNormal = new Vector3(0,0,1);
+        rec.setFaceNormal(r, outwardNormal);
+
+        rec.mat = mat;
+
+        Global.bBoxHits++;
         return true;
+    }
+
+    public static AABB empty() {
+        return new AABB(Interval.empty(), Interval.empty(), Interval.empty());
+    }
+
+    public static AABB universe() {
+        return new AABB(Interval.universe(), Interval.universe(), Interval.universe());
     }
 }

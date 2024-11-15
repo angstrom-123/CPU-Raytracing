@@ -6,9 +6,9 @@ public class Vector3 {
     public double[] e = new double[]{0,0,0};
 
     public Vector3 (double x, double y, double z) {
-        this.e[0] = x;
-        this.e[1] = y;
-        this.e[2] = z;
+        e[0] = x;
+        e[1] = y;
+        e[2] = z;
     }
 
     public double x() {
@@ -95,6 +95,33 @@ public class Vector3 {
     }
 
     // static utility functions
+
+    public static Vector3 rotate(Vector3 v, int axis, double degrees) {
+        if (degrees < 0) {
+            degrees += 360;
+        }
+        double theta = Global.deg2rad(degrees);
+
+        switch (axis) {
+            case 0:
+                // x
+                v.e[1] = v.e[1]*Math.cos(theta) - v.e[2]*Math.sin(theta);
+                v.e[2] = v.e[1]*Math.sin(theta) + v.e[2]*Math.cos(theta);
+                break;
+            case 1:
+                // y
+                v.e[0] = v.e[0]*Math.cos(theta) + v.e[2]*Math.sin(theta);
+                v.e[2] = -v.e[0]*Math.sin(theta) + v.e[2]*Math.cos(theta);
+                break;
+            case 2:
+                // z
+                v.e[0] = v.e[0]*Math.cos(theta) - v.e[1]*Math.sin(theta);
+                v.e[1] = v.e[0]*Math.sin(theta) + v.e[1]*Math.cos(theta);
+                break;
+        }
+
+        return v;
+    }
 
     public static double dot(Vector3 u, Vector3 v) {
         return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];

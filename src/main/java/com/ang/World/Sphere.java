@@ -1,13 +1,12 @@
 package com.ang.World;
 
+import com.ang.Global;
 import com.ang.Materials.Material;
 import com.ang.Utils.AABB;
 import com.ang.Utils.HitRecord;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Ray;
 import com.ang.Utils.Vector3;
-
-import com.ang.Global;
 
 public class Sphere extends Hittable {
     private Vector3 centre;
@@ -32,7 +31,6 @@ public class Sphere extends Hittable {
 
     @Override
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
-        Global.counter++;
         // vector centre C and unknown vector point P of intersection
         // (C - P) dot (C - P) = r^2
         // the vector equation = Origin + direction * timestep
@@ -76,7 +74,8 @@ public class Sphere extends Hittable {
         rec.setFaceNormal(r, outwardNormal);
 
         rec.mat = mat;
-       
+        
+        Global.hits++;
         return true;
     }
 }
