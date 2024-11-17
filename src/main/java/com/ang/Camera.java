@@ -79,19 +79,19 @@ public class Camera implements MainInterface{
                 //
                 //   SHADING WITH RT
                 //
-                // Vector3 pixelColour = new Vector3(0,0,0);
-                // for (int sample = 0; sample < samplesPerPixel; sample++) {
-                //     Ray r = getRay(i, j);
-                //     pixelColour.ADD(rayColour(r, maxBounces, world));
-                // }
-                // renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
+                Vector3 pixelColour = new Vector3(0,0,0);
+                for (int sample = 0; sample < samplesPerPixel; sample++) {
+                    Ray r = getRay(i, j);
+                    pixelColour.ADD(rayColour(r, maxBounces, world));
+                }
+                renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
 
                 //
                 // SHADING BY BVH BOUNDING BOX SORT OF WORKING
                 //
-                Ray r = getRay(i, j);
-                Global.bBoxHits = 0;
-                renderer.writePixel(rayBVH(r, maxBounces, world));
+                // Ray r = getRay(i, j);
+                // Global.bBoxHits = 0;
+                // renderer.writePixel(rayBVH(r, maxBounces, world));
             }
         }
 

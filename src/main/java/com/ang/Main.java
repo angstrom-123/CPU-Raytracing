@@ -44,45 +44,45 @@ public class Main
         HittableList world = new HittableList(500);
 
         // random spheres
-        // for (int a = -11; a < 11; a++) {
-        //     for (int b = -11; b < 11; b++) {
-        //         double chooseMat = Math.random();
-        //         Vector3 centre = new Vector3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
+        for (int a = -11; a < 11; a++) {
+            for (int b = -11; b < 11; b++) {
+                double chooseMat = Math.random();
+                Vector3 centre = new Vector3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
 
-        //         if (centre.subtract(new Vector3(4, 0.2, 0)).length() > 0.9) {
-        //             Material sphereMaterial;
+                if (centre.subtract(new Vector3(4, 0.2, 0)).length() > 0.9) {
+                    Material sphereMaterial;
 
-        //             if (chooseMat < 0.8) {
-        //                 Vector3 albedo = Vector3.random().multiply(Vector3.random());
-        //                 sphereMaterial = new Lambertian(albedo);
-        //             } else if (chooseMat < 0.95) {
-        //                 Vector3 albedo = Vector3.random(0.5, 1);
-        //                 double fuzziness = Global.randomInRange(0, 0.5);
-        //                 sphereMaterial = new Metal(albedo, fuzziness);
-        //             } else {
-        //                 sphereMaterial = new Dielectric(1.5);
-        //             }
+                    if (chooseMat < 0.8) {
+                        Vector3 albedo = Vector3.random().multiply(Vector3.random());
+                        sphereMaterial = new Lambertian(albedo);
+                    } else if (chooseMat < 0.95) {
+                        Vector3 albedo = Vector3.random(0.5, 1);
+                        double fuzziness = Global.randomInRange(0, 0.5);
+                        sphereMaterial = new Metal(albedo, fuzziness);
+                    } else {
+                        sphereMaterial = new Dielectric(1.5);
+                    }
 
-        //             world.add(new Sphere(centre, 0.2, sphereMaterial));
-        //         }
-        //     }
-        // }
+                    world.add(new Sphere(centre, 0.2, sphereMaterial));
+                }
+            }
+        }
 
         Material groundMaterial = new Lambertian(new Vector3(0.5, 0.5, 0.5));
         world.add(new Sphere(new Vector3(0, -1000, 0), 1000, groundMaterial));
         
         Material mat1 = new Dielectric(1.5);
-        // world.add(new Sphere(new Vector3(0, 1, 0), 1.0, mat1));
+        world.add(new Sphere(new Vector3(0, 1, 0), 1.0, mat1));
         
         Material mat2 = new Lambertian(new Vector3(0.4, 0.2, 0.1));
-        // world.add(new Sphere(new Vector3(-4, 1, 0), 1.0, mat2));
+        world.add(new Sphere(new Vector3(-4, 1, 0), 1.0, mat2));
 
         Material mat3 = new Metal(new Vector3(0.7, 0.6, 0.5), 0.0);
-        // world.add(new Sphere(new Vector3(4, 1, 0), 1.0, mat3));
+        world.add(new Sphere(new Vector3(4, 1, 0), 1.0, mat3));
 
-        world.add(new Sphere(new Vector3(10,0,-20), 10, mat2));
-        world.add(new Sphere(new Vector3(10,0,-15), 9, mat3));
-        world.add(new Sphere(new Vector3(10,0,-8), 8, mat1));
+        // world.add(new Sphere(new Vector3(10,0,-20), 10, mat2));
+        // world.add(new Sphere(new Vector3(10,0,-15), 9, mat3));
+        // world.add(new Sphere(new Vector3(10,0,-8), 8, mat1));
 
         world.add(new BVHNode(world));
 
