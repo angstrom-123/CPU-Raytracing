@@ -2,7 +2,6 @@ package com.ang.World;
 
 import com.ang.Global;
 import com.ang.Materials.Material;
-import com.ang.Utils.AABB;
 import com.ang.Utils.HitRecord;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Ray;
@@ -43,6 +42,10 @@ public class Sphere extends Hittable {
         // (o2c)^2 + 2*o2c*dt + (dt)^2 = r^2
         // organize to solve for t
         // t^2(d^2) + 2t(o2c*d) + ((o2c)^2 - r^2) = 0
+
+        if (!bBox.hit(r, tInterval, rec)) {
+            return false;
+        }
 
         Vector3 o2c = centre.subtract(r.origin());
         // d^2

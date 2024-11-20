@@ -1,4 +1,4 @@
-package com.ang.Utils;
+package com.ang;
 
 public interface MainInterface {
     void turnUp();

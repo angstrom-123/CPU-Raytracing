@@ -1,5 +1,7 @@
 package com.ang;
 
+import com.ang.World.HittableList;
+
 public class Global {
     // constants
     public final static double infinity = Double.MAX_VALUE;
@@ -8,6 +10,8 @@ public class Global {
     public static double hits = 0;
     public static double bBoxHits = 0;
     public static double count = 0;
+
+    public static HittableList world;
 
     // util
     public static double deg2rad(double degrees) {

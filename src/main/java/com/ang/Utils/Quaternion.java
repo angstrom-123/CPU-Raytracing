@@ -44,7 +44,7 @@ public class Quaternion {
         return new Vector3(result.x(), result.y(), result.z());
     }
 
-    public static Quaternion fromAxisAngle(double degrees, int x, int y, int z) {
+    public static Quaternion fromAxisAngle(double degrees, double x, double y, double z) {
         double halfTheta = Global.deg2rad(degrees) / 2;
         double sin = Math.sin(halfTheta);
         double cos = Math.cos(halfTheta);

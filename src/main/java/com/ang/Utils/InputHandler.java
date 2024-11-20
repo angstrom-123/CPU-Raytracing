@@ -3,6 +3,8 @@ package com.ang.Utils;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import com.ang.MainInterface;
+
 public class InputHandler extends KeyAdapter
 {
 private MainInterface mainInterface;

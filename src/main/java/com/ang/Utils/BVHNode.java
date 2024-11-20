@@ -1,10 +1,8 @@
-package com.ang.World;
+package com.ang.Utils;
 
-import com.ang.Utils.AABB;
-import com.ang.Utils.AABBSorter;
-import com.ang.Utils.HitRecord;
-import com.ang.Utils.Interval;
-import com.ang.Utils.Ray;
+import com.ang.World.AABB;
+import com.ang.World.Hittable;
+import com.ang.World.HittableList;
 
 public class BVHNode extends Hittable{
     private Hittable left;

@@ -4,7 +4,6 @@ import com.ang.Utils.CameraController;
 import com.ang.Utils.HitRecord;
 import com.ang.Utils.InputHandler;
 import com.ang.Utils.Interval;
-import com.ang.Utils.MainInterface;
 import com.ang.Utils.Ray;
 import com.ang.Utils.RayTracker;
 import com.ang.Utils.Renderer;
@@ -57,41 +56,34 @@ public class Camera implements MainInterface{
             for (int i = 0; i < imageWidth; i++) {
                 // 
                 // SHADING WITH NORMALS
-                //
-                // Vector3 pixelCentre = pixel0Location.add(pixelDeltaU.multiply(i)).add(pixelDeltaV.multiply(j));
-                // Vector3 rayDirection = pixelCentre.subtract(centre);
-                // Ray r = new Ray(centre, rayDirection);
-                // HitRecord rec = new HitRecord();
-                // Vector3 pixelColour;
-                // if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
-                //     if (rec.frontFace) {
-                //         pixelColour = rec.normal;
-                //     } else {
-                //         pixelColour = new Vector3(0,0,0);
-                //     }
-                // } else {
-                //     Vector3 unitDirection = (r.direction()).unitVector();
-                //     double a = 0.5 * (unitDirection.y() + 1.0);
-                //     pixelColour = new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
-                // }
-                // renderer.writePixel(pixelColour);
+                // 
+                Vector3 pixelCentre = pixel0Location.add(pixelDeltaU.multiply(i)).add(pixelDeltaV.multiply(j));
+                Vector3 rayDirection = pixelCentre.subtract(centre);
+                Ray r = new Ray(centre, rayDirection);
+                HitRecord rec = new HitRecord();
+                Vector3 pixelColour;
+                if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
+                    if (rec.frontFace) {
+                        pixelColour = rec.normal;
+                    } else {
+                        pixelColour = new Vector3(0,0,0);
+                    }
+                } else {
+                    Vector3 unitDirection = (r.direction()).unitVector();
+                    double a = 0.5 * (unitDirection.y() + 1.0);
+                    pixelColour = new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
+                }
+                renderer.writePixel(pixelColour);
 
                 //
                 //   SHADING WITH RT
                 //
-                Vector3 pixelColour = new Vector3(0,0,0);
-                for (int sample = 0; sample < samplesPerPixel; sample++) {
-                    Ray r = getRay(i, j);
-                    pixelColour.ADD(rayColour(r, maxBounces, world));
-                }
-                renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
-
-                //
-                // SHADING BY BVH BOUNDING BOX SORT OF WORKING
-                //
-                // Ray r = getRay(i, j);
-                // Global.bBoxHits = 0;
-                // renderer.writePixel(rayBVH(r, maxBounces, world));
+                // Vector3 pixelColour = new Vector3(0,0,0);
+                // for (int sample = 0; sample < samplesPerPixel; sample++) {
+                //     Ray r = getRay(i, j);
+                //     pixelColour.ADD(rayColour(r, maxBounces, world));
+                // }
+                // renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
             }
         }
 
@@ -198,20 +190,6 @@ public class Camera implements MainInterface{
         return new Vector3(Math.random() - 0.5, Math.random() - 0.5, 0);
     }
 
-    private Vector3 rayBVH(Ray r, int depth, HittableList world) {
-        HitRecord rec = new HitRecord();
-        // ignore extremely close hits to avoid floating point errors
-        if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
-            return new Vector3(Math.min(0.01*Global.bBoxHits, 1),0,0);
-        }
-        if (Global.bBoxHits > 0) {
-            Vector3 unitDirection = (r.direction()).unitVector();
-            double a = 0.5 * (unitDirection.y() + 1.0);
-            return new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
-        }
-        return new Vector3(0.7, 0.7, 0.7);
-    }
-
     private Vector3 rayColour(Ray r, int depth, HittableList world) {
         if (depth <= 0) {
             return new Vector3(0,0,0); // return black at bounce limit            
@@ -267,28 +245,28 @@ public class Camera implements MainInterface{
     }
 
     public void turnUp() {
-        Vector3[] nextVectors = controller.turn(1, 0, 0, turnStep);
+        Vector3[] nextVectors = controller.turn(u.x(), u.y(), u.z(), turnStep);
         lookFrom = nextVectors[0];
         lookAt = nextVectors[1];
         render(worldStore);
     }
 
     public void turnLeft() {
-        Vector3[] nextVectors = controller.turn(0, 1, 0, turnStep);
+        Vector3[] nextVectors = controller.turn(vUp.x(), vUp.y(), vUp.z(), turnStep);
         lookFrom = nextVectors[0];
         lookAt = nextVectors[1];
         render(worldStore);
     }
 
     public void turnDown() {
-        Vector3[] nextVectors = controller.turn(-1, 0, 0, turnStep);
+        Vector3[] nextVectors = controller.turn(-u.x(), -u.y(), -u.z(), turnStep);
         lookFrom = nextVectors[0];
         lookAt = nextVectors[1];
         render(worldStore);
     }
 
     public void turnRight() {
-        Vector3[] nextVectors = controller.turn(0, -1, 0, turnStep);
+        Vector3[] nextVectors = controller.turn(-vUp.x(), -vUp.y(), -vUp.z(), turnStep);
         lookFrom = nextVectors[0];
         lookAt = nextVectors[1];
         render(worldStore);

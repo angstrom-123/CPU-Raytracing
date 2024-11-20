@@ -8,6 +8,9 @@ import javax.imageio.*;
 import java.io.File;
 import java.io.IOException;
 
+import com.ang.MainInterface;
+import com.ang.Global;
+
 public class Renderer extends JFrame{
     int width;
     int height;

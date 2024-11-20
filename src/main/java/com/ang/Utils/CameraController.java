@@ -25,7 +25,7 @@ public class CameraController {
         return new Vector3[]{lf, la};
     }
 
-    public Vector3[] turn(int x, int y, int z, double step) {
+    public Vector3[] turn(double x, double y, double z, double step) {
         Quaternion q = Quaternion.fromAxisAngle(step, x, y, z);
         Vector3 rotated = q.rotate(w.negative());
         Ray raycast = new Ray(lf, rotated.unitVector());
