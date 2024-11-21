@@ -18,11 +18,11 @@ public class Main
 
         cam.aspectRatio = 16.0 / 9.0;
         cam.imageWidth = 400;
-        cam.samplesPerPixel = 1;
-        cam.maxBounces = 1;
+        cam.samplesPerPixel = 20;
+        cam.maxBounces = 20;
 
-        cam.fov = 20;
-        cam.lookFrom = new Vector3(5, 2, 5);
+        cam.fov = 70;
+        cam.lookFrom = new Vector3(3, 2, 3);
         // cam.lookFrom = new Vector3(13, 2, 3);
         cam.lookAt = new Vector3(0, 1, 0);
         cam.vUp = new Vector3(0, 1, 0);
@@ -76,7 +76,7 @@ public class Main
         // world.add(new Sphere(new Vector3(0, 1, 0), 1.0, mat1));
         
         Material mat2 = new Lambertian(new Vector3(0.4, 0.2, 0.1));
-        // world.add(new Sphere(new Vector3(-4, 1, 0), 1.0, mat2));
+        world.add(new Sphere(new Vector3(-4, 1, 0), 1.0, mat2));
 
         Material mat3 = new Metal(new Vector3(0.7, 0.6, 0.5), 0.0);
         // world.add(new Sphere(new Vector3(7, 1, 0), 1.0, mat3));
@@ -88,11 +88,11 @@ public class Main
         Global.world = world;
         Importer importer = new Importer();
 
-        // Mesh knight = importer.importOBJ("/chess_knight.obj", new Lambertian(new Vector3(1,0.1,0.1)));
-        // world.add(knight);
+        Mesh knight = importer.importOBJ("/chess_knight.obj", new Lambertian(new Vector3(1,1,1)));
+        world.add(knight);
 
-        Mesh box = importer.importOBJ("/cube.obj", new Lambertian(new Vector3(1,0.1,0.1)));
-        world.add(box);
+        // Mesh box = importer.importOBJ("/cube.obj", new Metal(new Vector3(1,0.1,0.1), 0));
+        // world.add(box);
         
         world.add(new BVHNode(world));
 

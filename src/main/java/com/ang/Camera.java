@@ -43,7 +43,6 @@ public class Camera implements MainInterface{
     private double turnStep = 4;
 
     public void render(HittableList world) {
-        System.out.println(lookFrom.x()+" "+lookFrom.y()+" "+lookFrom.z());
         if (!initDone) {
             worldStore = world;
             init();
@@ -57,33 +56,33 @@ public class Camera implements MainInterface{
                 // 
                 // SHADING WITH NORMALS
                 // 
-                Vector3 pixelCentre = pixel0Location.add(pixelDeltaU.multiply(i)).add(pixelDeltaV.multiply(j));
-                Vector3 rayDirection = pixelCentre.subtract(centre);
-                Ray r = new Ray(centre, rayDirection);
-                HitRecord rec = new HitRecord();
-                Vector3 pixelColour;
-                if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
-                    if (rec.frontFace) {
-                        pixelColour = rec.normal;
-                    } else {
-                        pixelColour = new Vector3(0,0,0);
-                    }
-                } else {
-                    Vector3 unitDirection = (r.direction()).unitVector();
-                    double a = 0.5 * (unitDirection.y() + 1.0);
-                    pixelColour = new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
-                }
-                renderer.writePixel(pixelColour);
+                // Vector3 pixelCentre = pixel0Location.add(pixelDeltaU.multiply(i)).add(pixelDeltaV.multiply(j));
+                // Vector3 rayDirection = pixelCentre.subtract(centre);
+                // Ray r = new Ray(centre, rayDirection);
+                // HitRecord rec = new HitRecord();
+                // Vector3 pixelColour;
+                // if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
+                //     if (rec.frontFace) {
+                //         pixelColour = rec.normal;
+                //     } else {
+                //         pixelColour = new Vector3(0,0,0);
+                //     }
+                // } else {
+                //     Vector3 unitDirection = (r.direction()).unitVector();
+                //     double a = 0.5 * (unitDirection.y() + 1.0);
+                //     pixelColour = new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
+                // }
+                // renderer.writePixel(pixelColour);
 
                 //
                 //   SHADING WITH RT
                 //
-                // Vector3 pixelColour = new Vector3(0,0,0);
-                // for (int sample = 0; sample < samplesPerPixel; sample++) {
-                //     Ray r = getRay(i, j);
-                //     pixelColour.ADD(rayColour(r, maxBounces, world));
-                // }
-                // renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
+                Vector3 pixelColour = new Vector3(0,0,0);
+                for (int sample = 0; sample < samplesPerPixel; sample++) {
+                    Ray r = getRay(i, j);
+                    pixelColour.ADD(rayColour(r, maxBounces, world));
+                }
+                renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
             }
         }
 

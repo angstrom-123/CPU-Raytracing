@@ -5,7 +5,7 @@ import java.io.*;
 import com.ang.Materials.Material;
 import com.ang.World.Mesh;
 
-public class Importer { ///////////////////////////////////////////// looking at header lines in file, should not load until v lines
+public class Importer { 
     public Mesh importOBJ(String path, Material mat) {
         double[][][] data;
         try {

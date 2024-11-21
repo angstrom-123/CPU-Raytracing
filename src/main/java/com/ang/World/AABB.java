@@ -44,6 +44,16 @@ public class AABB {
         } else {
             z = new Interval(b.z(), a.z());
         }
+
+        if (x.size() < 1E-8) {
+            x.expand(2E-8);
+        }
+        if (y.size() < 1E-8) {
+            y.expand(2E-8);
+        }
+        if (z.size() < 1E-8) {
+            z.expand(2E-8);
+        }
     }
 
     // define in terms of multiple bBoxes

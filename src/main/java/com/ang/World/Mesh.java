@@ -41,16 +41,13 @@ public class Mesh extends Hittable{
 
             tris[i] = tri;
             this.bBox = new AABB(this.bBox, tri.bBox());
-
-            Global.world.add(new Sphere(a, 0.05, red));
-            Global.world.add(new Sphere(b, 0.05, red));
-            Global.world.add(new Sphere(c, 0.05, red));
         }
     }
 
     @Override
     public AABB bBox() {
         return bBox;
+        // return AABB.universe();
     }
 
     @Override
