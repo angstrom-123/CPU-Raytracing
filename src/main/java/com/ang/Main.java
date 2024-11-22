@@ -3,6 +3,7 @@ package com.ang;
 import com.ang.Materials.*;
 import com.ang.Utils.BVHNode;
 import com.ang.Utils.Importer;
+import com.ang.Utils.Interval;
 import com.ang.Utils.Vector3;
 import com.ang.World.HittableList;
 import com.ang.World.Sphere;
@@ -21,15 +22,14 @@ public class Main
         cam.samplesPerPixel = 20;
         cam.maxBounces = 20;
 
-        cam.fov = 70;
-        cam.lookFrom = new Vector3(3, 2, 3);
+        cam.fov = 50;
+        cam.lookFrom = new Vector3(1, 1, 3);
         // cam.lookFrom = new Vector3(13, 2, 3);
         cam.lookAt = new Vector3(0, 1, 0);
         cam.vUp = new Vector3(0, 1, 0);
 
-        // cam.defocusAngle = 0.6;
-        cam.defocusAngle = 0;
-        cam.focusDistance = 10.0;
+        cam.defocusAngle = 1;
+        cam.focusDistance = 3;
 
         // world
         HittableList world = createWorld();
@@ -45,11 +45,15 @@ public class Main
         HittableList world = new HittableList(2000);
 
         // random spheres
+        Interval inter = new Interval(-1, 1);
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
                 double chooseMat = Math.random();
                 Vector3 centre = new Vector3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
 
+                if (inter.surrounds(centre.x()) && inter.surrounds(centre.z())) {
+                    continue;
+                }
                 if (centre.subtract(new Vector3(4, 0.2, 0)).length() > 0.9) {
                     Material sphereMaterial;
 
@@ -63,8 +67,7 @@ public class Main
                     } else {
                         sphereMaterial = new Dielectric(1.5);
                     }
-
-                    // world.add(new Sphere(centre, 0.2, sphereMaterial));
+                    world.add(new Sphere(centre, 0.2, sphereMaterial));   
                 }
             }
         }
@@ -72,11 +75,10 @@ public class Main
         Material groundMaterial = new Lambertian(new Vector3(0.5, 0.5, 0.5));
         world.add(new Sphere(new Vector3(0, -1000, 0), 1000, groundMaterial));
         
-        // Material mat1 = new Dielectric(1.5);
+        Material mat1 = new Dielectric(1.5);
         // world.add(new Sphere(new Vector3(0, 1, 0), 1.0, mat1));
         
         Material mat2 = new Lambertian(new Vector3(0.4, 0.2, 0.1));
-        world.add(new Sphere(new Vector3(-4, 1, 0), 1.0, mat2));
 
         Material mat3 = new Metal(new Vector3(0.7, 0.6, 0.5), 0.0);
         // world.add(new Sphere(new Vector3(7, 1, 0), 1.0, mat3));
@@ -88,8 +90,10 @@ public class Main
         Global.world = world;
         Importer importer = new Importer();
 
-        Mesh knight = importer.importOBJ("/chess_knight.obj", new Lambertian(new Vector3(1,1,1)));
+        Mesh knight = importer.importOBJ("/chess_knight.obj", mat1);
         world.add(knight);
+        world.add(new Sphere(new Vector3(3, 1, -3), 3.0, mat3));
+
 
         // Mesh box = importer.importOBJ("/cube.obj", new Metal(new Vector3(1,0.1,0.1), 0));
         // world.add(box);
