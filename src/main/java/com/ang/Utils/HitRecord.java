@@ -6,6 +6,8 @@ public class HitRecord {
     public Vector3 p;
     public Vector3 normal;
     public Material mat;
+    public double u;
+    public double v;
     public double t;
     public boolean frontFace;
 
@@ -19,9 +21,17 @@ public class HitRecord {
         }
     }
 
+    public void setUV(double[] uv) {
+        this.u = uv[0];
+        this.v = uv[1];
+    }
+
     public void set(HitRecord rec) {
         p = rec.p;
         normal = rec.normal;
+        mat = rec.mat;
+        u = rec.u;
+        v = rec.v;
         t = rec.t;
         frontFace = rec.frontFace;
     }

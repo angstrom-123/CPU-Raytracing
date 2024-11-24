@@ -2,49 +2,56 @@ package com.ang;
 
 import com.ang.Materials.*;
 import com.ang.Utils.BVHNode;
-import com.ang.Utils.Importer;
+import com.ang.Utils.OBJImporter;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Vector3;
 import com.ang.World.HittableList;
+import com.ang.World.Mesh;
 import com.ang.World.Sphere;
 import com.ang.World.Tri;
-import com.ang.World.Mesh;
+import com.ang.World.Quad;
 
 public class Main 
 {
     public static void main( String[] args )
     {
-        // Camera
         Camera cam = new Camera();
 
-        cam.aspectRatio = 16.0 / 9.0;
         cam.imageWidth = 400;
-        cam.samplesPerPixel = 20;
+        cam.samplesPerPixel = 100;
         cam.maxBounces = 20;
+
+        switch (4) {
+            case 1:
+                knightScene(cam);
+                break;
+            case 2:
+                globeScene(cam);
+                break;
+            case 3:
+                emissionScene(cam);
+                break;
+            case 4:
+                cornellBoxScene(cam);
+                break;
+        }
+    }
+
+    public static void knightScene(Camera cam) {
+        HittableList world = new HittableList(2000);
+
+        cam.aspectRatio = 16.0 / 9.0;
 
         cam.fov = 50;
         cam.lookFrom = new Vector3(1, 1, 3);
-        // cam.lookFrom = new Vector3(13, 2, 3);
         cam.lookAt = new Vector3(0, 1, 0);
         cam.vUp = new Vector3(0, 1, 0);
+
+        cam.background = new Vector3(0.7, 0.8, 1);
 
         cam.defocusAngle = 1;
         cam.focusDistance = 3;
 
-        // world
-        HittableList world = createWorld();
-
-        double[] info = render(cam, world);
-
-        System.out.println((info[0]/1000)+"s");
-        System.out.println(info[1]+" bbox "+info[2]+" sphere");
-        System.out.println("bbox count "+Global.count);
-    }
-
-    public static HittableList createWorld() {
-        HittableList world = new HittableList(2000);
-
-        // random spheres
         Interval inter = new Interval(-1, 1);
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
@@ -72,42 +79,120 @@ public class Main
             }
         }
 
-        Material groundMaterial = new Lambertian(new Vector3(0.5, 0.5, 0.5));
-        world.add(new Sphere(new Vector3(0, -1000, 0), 1000, groundMaterial));
+        Texture checker = new SpatialCheckerTexture(0.32, new Vector3(0.2, 0.3, 0.1), new Vector3(0.9, 0.9, 0.9));
+
+        Material glass = new Dielectric(1.5);
+        Material mirror = new Metal(new Vector3(0.7, 0.6, 0.5), 0.0);
+
+        OBJImporter importer = new OBJImporter();
+        Mesh knight = importer.loadOBJ(new Vector3(0,0,0), "/models/chess_knight.obj", glass);
         
-        Material mat1 = new Dielectric(1.5);
-        // world.add(new Sphere(new Vector3(0, 1, 0), 1.0, mat1));
-        
-        Material mat2 = new Lambertian(new Vector3(0.4, 0.2, 0.1));
-
-        Material mat3 = new Metal(new Vector3(0.7, 0.6, 0.5), 0.0);
-        // world.add(new Sphere(new Vector3(7, 1, 0), 1.0, mat3));
-
-        // world.add(new Sphere(new Vector3(10,0,-20), 10, mat2));
-        // world.add(new Sphere(new Vector3(10,0,-15), 9, mat3));
-        // world.add(new Sphere(new Vector3(10,0,-8), 8, mat1));
-
-        Global.world = world;
-        Importer importer = new Importer();
-
-        Mesh knight = importer.importOBJ("/chess_knight.obj", mat1);
         world.add(knight);
-        world.add(new Sphere(new Vector3(3, 1, -3), 3.0, mat3));
-
-
-        // Mesh box = importer.importOBJ("/cube.obj", new Metal(new Vector3(1,0.1,0.1), 0));
-        // world.add(box);
+        world.add(new Sphere(new Vector3(3, 1, -3), 3.0, mirror));
+        world.add(new Sphere(new Vector3(0, -1000, 0), 1000, new Lambertian(checker)));
         
         world.add(new BVHNode(world));
 
-        return world;
+        Global.world = world;
+
+        render(cam, world);
     }
 
-    public static double[] render(Camera cam, HittableList world) {
+    public static void globeScene(Camera cam) {
+        HittableList world = new HittableList(100);
+
+        cam.aspectRatio = 16.0 / 9.0;
+
+        cam.fov = 50;
+        cam.lookFrom = new Vector3(0, 0, 10);
+        cam.lookAt = new Vector3(0, 0, 0);
+        cam.vUp = new Vector3(0, 1, 0);
+
+        cam.background = new Vector3(0.7, 0.8, 1);
+
+        cam.defocusAngle = 0;
+
+        Texture earthTexture = new ImageTexture("/textures/earth_map.jpg");
+        Material earthSurface = new Lambertian(earthTexture);
+
+        world.add(new Sphere(new Vector3(0,0,0), 3, earthSurface));
+
+        world.add(new BVHNode(world));
+
+        Global.world = world;
+
+        render(cam, world);
+    }
+
+    public static void emissionScene(Camera cam) {
+        HittableList world = new HittableList(2000);
+        
+        cam.aspectRatio = 16.0 / 9.0;
+
+        cam.fov = 50;
+        cam.lookFrom = new Vector3(1, 1, 3);
+        cam.lookAt = new Vector3(0, 1, 0);
+        cam.vUp = new Vector3(0, 1, 0);
+
+        cam.background = new Vector3(0,0,0);
+
+        cam.defocusAngle = 0;
+
+        Texture checker = new SpatialCheckerTexture(0.32, new Vector3(0.2, 0.3, 0.1), new Vector3(0.9, 0.9, 0.9));
+
+        Material glass = new Dielectric(1.5);
+        Material light = new Emissive(new Vector3(5,5,5));
+
+        OBJImporter importer = new OBJImporter();
+        Mesh knight = importer.loadOBJ(new Vector3(0,0,0), "/models/chess_knight.obj", glass);
+        
+        world.add(knight);
+        world.add(new Sphere(new Vector3(0, -1000, 0), 1000, new Lambertian(checker)));
+        world.add(new Sphere(new Vector3(-3,2,-3), 1, light));
+
+        world.add(new BVHNode(world));
+
+        Global.world = world;
+
+        render(cam, world);
+    }
+
+    public static void cornellBoxScene(Camera cam) {
+        HittableList world = new HittableList(2000);
+        
+        cam.aspectRatio = 1.0 / 1.0;
+
+        cam.fov = 50;
+        cam.lookFrom = new Vector3(0, 3, 7);
+        cam.lookAt = new Vector3(0, 3, 0);
+        cam.vUp = new Vector3(0, 1, 0);
+
+        cam.background = new Vector3(0,0,0);
+
+        cam.defocusAngle = 0;
+
+        Material white = new Lambertian(new Vector3(0.73, 0.73, 0.73));
+        Material red = new Lambertian(new Vector3(0.65,0.05,0.05));
+        Material green = new Lambertian(new Vector3(0.12, 0.45, 0.15));
+        Material light = new Emissive(new Vector3( 15, 15, 15));
+        
+        world.add(new Quad(new Vector3(-3,0,0), new Vector3(-3,0,-6), new Vector3(-3,6,-6), new Vector3(-3,6,0), green));
+        world.add(new Quad(new Vector3(3,6,-6), new Vector3(3,0,-6), new Vector3(3,0,0), new Vector3(3,6,0), red));
+        world.add(new Quad(new Vector3(-3,6,0), new Vector3(-3,6,-6), new Vector3(3,6,-6), new Vector3(3,6,0), white));
+        world.add(new Quad(new Vector3(-3,0,0), new Vector3(3,0,0), new Vector3(3,0,-6), new Vector3(-3,0,-6), white));
+        world.add(new Quad(new Vector3(-3,0,-6), new Vector3(3,0,-6), new Vector3(3,6,-6), new Vector3(-3,6,-6), white));
+        world.add(new Quad(new Vector3(-1,6,-2), new Vector3(1,6,-2), new Vector3(1,6,-4), new Vector3(-1,6,-4), light));
+
+        Global.world = world;
+        
+        render(cam, world);
+    }
+
+    public static void render(Camera cam, HittableList world) {
         double startTime = (double) System.currentTimeMillis();
         cam.render(world);
         double endTime = (double) System.currentTimeMillis();
         
-        return new double[]{(endTime-startTime), Global.bBoxHits, Global.hits};
+        System.out.println(((endTime - startTime) / 1000)+"s to render");
     }
 }

@@ -15,6 +15,7 @@ public class Camera implements MainInterface{
     public int imageWidth = 100;
     public int samplesPerPixel = 10;
     public int maxBounces = 10;
+    public Vector3 background;
 
     public double fov = 90;
     public Vector3 lookFrom = new Vector3(0,0,0);
@@ -53,30 +54,6 @@ public class Camera implements MainInterface{
 
         for (int j = 0; j < imageHeight; j++) {
             for (int i = 0; i < imageWidth; i++) {
-                // 
-                // SHADING WITH NORMALS
-                // 
-                // Vector3 pixelCentre = pixel0Location.add(pixelDeltaU.multiply(i)).add(pixelDeltaV.multiply(j));
-                // Vector3 rayDirection = pixelCentre.subtract(centre);
-                // Ray r = new Ray(centre, rayDirection);
-                // HitRecord rec = new HitRecord();
-                // Vector3 pixelColour;
-                // if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
-                //     if (rec.frontFace) {
-                //         pixelColour = rec.normal;
-                //     } else {
-                //         pixelColour = new Vector3(0,0,0);
-                //     }
-                // } else {
-                //     Vector3 unitDirection = (r.direction()).unitVector();
-                //     double a = 0.5 * (unitDirection.y() + 1.0);
-                //     pixelColour = new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
-                // }
-                // renderer.writePixel(pixelColour);
-
-                //
-                //   SHADING WITH RT
-                //
                 Vector3 pixelColour = new Vector3(0,0,0);
                 for (int sample = 0; sample < samplesPerPixel; sample++) {
                     Ray r = getRay(i, j);
@@ -87,7 +64,7 @@ public class Camera implements MainInterface{
         }
 
         renderer.drawScreen();
-        // renderer.saveFile("");
+        renderer.saveFile("");
     }
 
     private void init() {
@@ -190,24 +167,28 @@ public class Camera implements MainInterface{
     }
 
     private Vector3 rayColour(Ray r, int depth, HittableList world) {
+        // return black at bounce limit
         if (depth <= 0) {
-            return new Vector3(0,0,0); // return black at bounce limit            
+            return new Vector3(0,0,0);        
         }
 
         HitRecord rec = new HitRecord();
-        // ignore extremely close hits to avoid floating point errors
-        if (world.hit(r, new Interval(0.001, Global.infinity), rec)) {
-            RayTracker rt = new RayTracker(new Vector3(0,0,0), new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, 0)));
-            if (rec.mat.scatter(r, rec, rt)) {
-                return rayColour(rt.scattered, depth-1, world).multiply(rt.attenuation);
-            }
-            return new Vector3(0,0,0);
+
+        // return background if ray missed the world
+        if (!world.hit(r, new Interval(0.001, Global.infinity), rec)) {
+            return background;
         }
 
-        // blend between white and blue skybox
-        Vector3 unitDirection = (r.direction()).unitVector();
-        double a = 0.5 * (unitDirection.y() + 1.0);
-        return new Vector3(1, 1, 1).multiply(1 - a).add(new Vector3(0.5, 0.7, 1).multiply(a));
+        RayTracker rt = new RayTracker(new Vector3(0,0,0), new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, 0)));
+        Vector3 colourFromEmission = rec.mat.emitted(rec.u, rec.v, rec.p);
+        
+        if (!rec.mat.scatter(r, rec, rt)) {
+            return colourFromEmission;
+        }
+
+        Vector3 colourFromScatter = rayColour(rt.scattered, depth-1, world).multiply(rt.attenuation);
+
+        return colourFromEmission.add(colourFromScatter);
     }
 
     private Vector3 sampleDefocusDisk() {

@@ -6,16 +6,16 @@ import com.ang.Utils.RayTracker;
 import com.ang.Utils.Vector3;
 
 public class Lambertian extends Material{
-    private Vector3 albedo;
+    private Texture tex;
 
     public Lambertian(Vector3 albedo) {
-        this.albedo = albedo;
+        tex = new SolidColour(albedo);
     }
 
-    @Override
-    public Vector3 getAlbedo() {
-        return albedo;
+    public Lambertian(Texture tex) {
+        this.tex = tex;
     }
+    boolean saved = false;
 
     @Override
     public boolean scatter(Ray rIn, HitRecord rec, RayTracker rt) {
@@ -26,7 +26,8 @@ public class Lambertian extends Material{
             scatterDirection = rec.normal;
         }
 
-        rt.set(albedo, new Ray(rec.p, scatterDirection));
+        rt.set(tex.value(rec.u, rec.v, rec.p), new Ray(rec.p, scatterDirection));
+
         return true;
     }
 }

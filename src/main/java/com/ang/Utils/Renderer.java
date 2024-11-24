@@ -8,9 +8,6 @@ import javax.imageio.*;
 import java.io.File;
 import java.io.IOException;
 
-import com.ang.MainInterface;
-import com.ang.Global;
-
 public class Renderer extends JFrame{
     int width;
     int height;
@@ -76,11 +73,21 @@ public class Renderer extends JFrame{
         b = linear2gamma(b);
 
         // 0-1 to 0-255
-        int rComponent = normalized2RGB(r);
-        int gComponent = normalized2RGB(g);
-        int bComponent = normalized2RGB(b);
+        int rComponent = (int)Math.round(r * 255); 
+        int gComponent = (int)Math.round(g * 255); 
+        int bCompoment = (int)Math.round(b * 255); 
 
-        int col = (rComponent << 16) | (gComponent << 8) | bComponent;
+        if (rComponent > 255) {
+            rComponent = 255;
+        }
+        if (gComponent > 255) {
+            gComponent = 255;
+        }
+        if (bCompoment > 255) {
+            bCompoment = 255;
+        }
+
+        int col = (rComponent << 16) | (gComponent << 8) | bCompoment;
         pixels[index] = col;
         img.setRGB(index % width, (int)Math.floor(index / width) , col);
         index++;
@@ -91,10 +98,6 @@ public class Renderer extends JFrame{
     public void drawScreen() {
         frame.repaint();
         index = 0;
-    }
-
-    private int normalized2RGB(double unitComponent) {
-        return (int)Math.round(unitComponent * 255); 
     }
 
     private double linear2gamma(double linearComponent) {

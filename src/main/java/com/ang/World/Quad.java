@@ -1,38 +1,26 @@
 package com.ang.World;
 
-import com.ang.Materials.*;
+import com.ang.Materials.Material;
 import com.ang.Utils.HitRecord;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Ray;
 import com.ang.Utils.Vector3;
 
-public class Mesh extends Hittable{
+public class Quad extends Hittable{
     private AABB bBox = AABB.empty();
-
     private Tri[] tris;
+    private Material mat;
 
-    public Mesh(Vector3[] vd, Vector3[] nd, int[][] fi, int[][] ni, Material mat) {
-        tris = new Tri[fi.length];
+    public Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Material mat) {
+        Tri t1 = new Tri(a, b, c, mat);
+        Tri t2 = new Tri(a, c, d, mat);
 
-        for (int i = 0; i < fi.length; i++) {
-            Vector3 a = vd[fi[i][0]];
-            Vector3 b = vd[fi[i][1]];
-            Vector3 c = vd[fi[i][2]];
+        this.bBox = new AABB(this.bBox, t1.bBox());
+        this.bBox = new AABB(this.bBox, t2.bBox());
 
-            Vector3 vna = nd[ni[i][0]];
-            Vector3 vnb = nd[ni[i][1]];
-            Vector3 vnc = nd[ni[i][2]];
+        tris = new Tri[]{t1, t2};
 
-            Tri tri = new Tri(a, b, c, vna, vnb, vnc, mat);
-            tris[i] = tri;
-
-            this.bBox = new AABB(this.bBox, tri.bBox());
-        }
-    }
-
-    @Override
-    public AABB bBox() {
-        return bBox;
+        this.mat = mat;
     }
 
     @Override
@@ -55,5 +43,10 @@ public class Mesh extends Hittable{
         }
 
         return hitAnything;
+    }
+
+    @Override
+    public AABB bBox() {
+        return bBox;
     }
 }

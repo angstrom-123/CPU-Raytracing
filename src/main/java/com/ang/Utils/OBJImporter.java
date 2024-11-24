@@ -5,8 +5,8 @@ import java.io.*;
 import com.ang.Materials.Material;
 import com.ang.World.Mesh;
 
-public class Importer { 
-    public Mesh importOBJ(String path, Material mat) {
+public class OBJImporter { 
+    public Mesh loadOBJ(Vector3 position, String path, Material mat) {
         double[][][] data;
         try {
             data = extractData(path);
@@ -20,7 +20,17 @@ public class Importer {
         int[][] faceIndices = to2dIntArray(data[2]);
         int[][] normalIndices = to2dIntArray(data[3]);
 
+        vertexData = applyOffset(vertexData, position);
+
         return new Mesh(vertexData, normalData, faceIndices, normalIndices, mat);
+    }
+
+    private Vector3[] applyOffset(Vector3[] data, Vector3 offset) {
+        for (int i = 0; i < data.length; i++) {
+            data[i] = data[i].add(offset);
+        }
+
+        return data;
     }
 
     private Vector3[] toVectorArray(double[][] data) {

@@ -1,7 +1,5 @@
 package com.ang.World;
 
-import com.ang.Global;
-import com.ang.Materials.*;
 import com.ang.Utils.HitRecord;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Ray;
@@ -9,7 +7,6 @@ import com.ang.Utils.Vector3;
 
 public class AABB {
     public Interval x, y, z;
-    public Material mat = new Transmitter(new Vector3(1,0,0));
 
     public AABB() {
         x = new Interval();
@@ -116,7 +113,6 @@ public class AABB {
             }
         }
 
-        Global.bBoxHits++;
         return true;
     }
 

@@ -43,11 +43,9 @@ public class HittableList {
 
             // if hit something, only searches for closer hits
             if (hittables[i].hit(r, new Interval(tInterval.min, closestYet), tempRec)) {
-                // check if the normals are being calculated correctly here!!!!!!!
                 hitAnything = true;
                 closestYet = tempRec.t;
                 rec.set(tempRec);
-                rec.mat = tempRec.mat;
             }
         }
 

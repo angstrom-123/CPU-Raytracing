@@ -7,18 +7,19 @@ import com.ang.Utils.Ray;
 import com.ang.Utils.Vector3;
 
 public class Tri extends Hittable{
-    private Vector3 a, b, c;
+    private Vector3 a;
     private Vector3 ab, ac;
     private Vector3 na, nb, nc;
     private Vector3 normal; 
-
     private AABB bBox;
     private Material mat;
 
+    public Tri(Vector3 a, Vector3 b, Vector3 c, Material mat) {
+        this(a, b, c, Vector3.cross(b.subtract(a), c.subtract(a)), Vector3.cross(b.subtract(a), c.subtract(a)), Vector3.cross(b.subtract(a), c.subtract(a)), mat);
+    }
+
     public Tri(Vector3 a, Vector3 b, Vector3 c, Vector3 na, Vector3 nb, Vector3 nc, Material mat) {
         this.a = a;
-        this.b = b;
-        this.c = c;
 
         this.na = na;
         this.nb = nb;
@@ -34,7 +35,6 @@ public class Tri extends Hittable{
 
         double minX, minY, minZ;
         double maxX, maxY, maxZ;
-        
         
         minX = Math.min(Math.min(a.x(), b.x()), c.x()) - 0.1;
         minY = Math.min(Math.min(a.y(), b.y()), c.y()) - 0.1;
@@ -79,7 +79,6 @@ public class Tri extends Hittable{
         rec.t = dst;
         rec.p = r.at(rec.t);
         rec.setFaceNormal(r, ((na.multiply(w)).add(nb.multiply(u).add(nc.multiply(v)))).unitVector());
-        // rec.setFaceNormal(r, normal);
         rec.mat = mat;
 
         return true;

@@ -1,11 +1,12 @@
 package com.ang.World;
 
-import com.ang.Global;
 import com.ang.Materials.Material;
 import com.ang.Utils.HitRecord;
 import com.ang.Utils.Interval;
 import com.ang.Utils.Ray;
 import com.ang.Utils.Vector3;
+
+import com.ang.Global;
 
 public class Sphere extends Hittable {
     private Vector3 centre;
@@ -76,9 +77,18 @@ public class Sphere extends Hittable {
         Vector3 outwardNormal = (rec.p.subtract(centre)).divide(radius);
         rec.setFaceNormal(r, outwardNormal);
 
+        getUV(outwardNormal, rec);
+
         rec.mat = mat;
         
-        Global.hits++;
         return true;
+    }
+
+    private static void getUV(Vector3 p, HitRecord rec) {
+        double theta = Math.acos(-p.y());
+        double phi = Math.atan2(-p.z(), p.x()) + Global.pi;
+
+        rec.u = phi / (2 * Global.pi);
+        rec.v = theta / Global.pi;
     }
 }
