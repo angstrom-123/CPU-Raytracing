@@ -1,6 +1,6 @@
 package com.ang;
 
-import com.ang.World.HittableList;
+import com.ang.Hittables.HittableList;
 
 public class Global {
     // constants

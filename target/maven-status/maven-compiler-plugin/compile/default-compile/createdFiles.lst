@@ -5,6 +5,7 @@ com\ang\Utils\Vector3.class
 com\ang\World\Hittable.class
 com\ang\Materials\Material.class
 com\ang\Materials\Texture.class
+com\ang\World\Cube.class
 com\ang\World\Tri.class
 com\ang\Utils\Renderer$1.class
 com\ang\World\Quad.class

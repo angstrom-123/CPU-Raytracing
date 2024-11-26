@@ -1,15 +1,19 @@
 package com.ang;
 
-import com.ang.Materials.*;
-import com.ang.Utils.BVHNode;
-import com.ang.Utils.OBJImporter;
-import com.ang.Utils.Interval;
-import com.ang.Utils.Vector3;
-import com.ang.World.HittableList;
-import com.ang.World.Mesh;
-import com.ang.World.Sphere;
-import com.ang.World.Tri;
-import com.ang.World.Quad;
+import com.ang.AABB.BVHNode;
+import com.ang.Camera.Camera;
+import com.ang.Hittables.HittableList;
+import com.ang.Hittables.Compound.Mesh;
+import com.ang.Hittables.Compound.Quad;
+import com.ang.Hittables.Primitive.Sphere;
+import com.ang.Hittables.Primitive.Tri;
+import com.ang.Material.*;
+import com.ang.Texture.ImageTexture;
+import com.ang.Texture.SpatialCheckerTexture;
+import com.ang.Texture.Texture;
+import com.ang.Util.Interval;
+import com.ang.Util.OBJImporter;
+import com.ang.Util.Vector3;
 
 public class Main 
 {
@@ -18,23 +22,82 @@ public class Main
         Camera cam = new Camera();
 
         cam.imageWidth = 400;
-        cam.samplesPerPixel = 100;
+        cam.samplesPerPixel = 50;
         cam.maxBounces = 20;
 
-        switch (4) {
+        switch (3) {
             case 1:
-                knightScene(cam);
+                spheresScene(cam);
                 break;
             case 2:
-                globeScene(cam);
+                knightScene(cam);
                 break;
             case 3:
-                emissionScene(cam);
+                globeScene(cam);
                 break;
             case 4:
+                emissionScene(cam);
+                break;
+            case 5:
                 cornellBoxScene(cam);
                 break;
         }
+    }
+
+    public static void spheresScene(Camera cam) {
+        HittableList world = new HittableList(2000);
+
+        cam.aspectRatio = 16.0 / 9.0;
+
+        cam.fov = 20;
+        cam.lookFrom = new Vector3(13, 2, 3);
+        cam.lookAt = new Vector3(0, 0, 0);
+        cam.vUp = new Vector3(0, 1, 0);
+
+        cam.background = new Vector3(0.7, 0.8, 1);
+
+        cam.defocusAngle = 0.6;
+        cam.focusDistance = 10;
+
+        for (int a = -11; a < 11; a++) {
+            for (int b = -11; b < 11; b++) {
+                double chooseMat = Math.random();
+                Vector3 centre = new Vector3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
+
+                if (centre.subtract(new Vector3(4, 0.2, 0)).length() > 0.9) {
+                    Material sphereMaterial;
+
+                    if (chooseMat < 0.8) {
+                        Vector3 albedo = Vector3.random().multiply(Vector3.random());
+                        sphereMaterial = new Lambertian(albedo);
+                    } else if (chooseMat < 0.95) {
+                        Vector3 albedo = Vector3.random(0.5, 1);
+                        double fuzziness = Global.randomInRange(0, 0.5);
+                        sphereMaterial = new Metal(albedo, fuzziness);
+                    } else {
+                        sphereMaterial = new Dielectric(1.5);
+                    }
+
+                    world.add(new Sphere(centre, 0.2, sphereMaterial));   
+                }
+            }
+        }
+
+        Material ground = new Lambertian(new Vector3(0.5, 0.5, 0.5));
+        Material ball1 = new Dielectric(1.5);
+        Material ball2 = new Lambertian(new Vector3(0.4, 0.2, 0.1));
+        Material ball3 = new Metal(new Vector3(0.7, 0.6, 0.5), 0);
+
+        world.add(new Sphere(new Vector3(0,-1000,0), 1000, ground));
+        world.add(new Sphere(new Vector3(0,1,0), 1, ball1));
+        world.add(new Sphere(new Vector3(-4,1,0), 1, ball2));
+        world.add(new Sphere(new Vector3(4,1,0), 1, ball3));
+
+        world.add(new BVHNode(world));
+
+        Global.world = world;
+
+        render(cam, world);
     }
 
     public static void knightScene(Camera cam) {
