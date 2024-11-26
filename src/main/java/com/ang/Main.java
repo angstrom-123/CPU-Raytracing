@@ -2,15 +2,17 @@ package com.ang;
 
 import com.ang.AABB.BVHNode;
 import com.ang.Camera.Camera;
-import com.ang.Hittables.HittableList;
-import com.ang.Hittables.Compound.Mesh;
-import com.ang.Hittables.Compound.Quad;
-import com.ang.Hittables.Primitive.Sphere;
-import com.ang.Hittables.Primitive.Tri;
+import com.ang.Hittable.HittableList;
+import com.ang.Hittable.Compound.Cuboid;
+import com.ang.Hittable.Compound.Mesh;
+import com.ang.Hittable.Compound.Quad;
+import com.ang.Hittable.Primitive.Sphere;
+import com.ang.Hittable.Primitive.Tri;
 import com.ang.Material.*;
 import com.ang.Texture.ImageTexture;
 import com.ang.Texture.SpatialCheckerTexture;
 import com.ang.Texture.Texture;
+import com.ang.Thread.Master;
 import com.ang.Util.Interval;
 import com.ang.Util.OBJImporter;
 import com.ang.Util.Vector3;
@@ -21,11 +23,11 @@ public class Main
     {
         Camera cam = new Camera();
 
-        cam.imageWidth = 400;
-        cam.samplesPerPixel = 50;
+        cam.imageWidth = 200;
+        cam.samplesPerPixel = 125;
         cam.maxBounces = 20;
 
-        switch (3) {
+        switch (5) {
             case 1:
                 spheresScene(cam);
                 break;
@@ -222,11 +224,13 @@ public class Main
 
     public static void cornellBoxScene(Camera cam) {
         HittableList world = new HittableList(2000);
+
+        Global.world = world;
         
         cam.aspectRatio = 1.0 / 1.0;
 
-        cam.fov = 50;
-        cam.lookFrom = new Vector3(0, 3, 7);
+        cam.fov = 25;
+        cam.lookFrom = new Vector3(0, 3, 14);
         cam.lookAt = new Vector3(0, 3, 0);
         cam.vUp = new Vector3(0, 1, 0);
 
@@ -237,13 +241,18 @@ public class Main
         Material white = new Lambertian(new Vector3(0.73, 0.73, 0.73));
         Material red = new Lambertian(new Vector3(0.65,0.05,0.05));
         Material green = new Lambertian(new Vector3(0.12, 0.45, 0.15));
-        Material light = new Emissive(new Vector3( 15, 15, 15));
+        Material light = new Emissive(new Vector3( 15, 13, 12));
         
-        world.add(new Quad(new Vector3(-3,0,0), new Vector3(-3,0,-6), new Vector3(-3,6,-6), new Vector3(-3,6,0), green));
-        world.add(new Quad(new Vector3(3,6,-6), new Vector3(3,0,-6), new Vector3(3,0,0), new Vector3(3,6,0), red));
+        world.add(new Quad(new Vector3(-3,0,0), new Vector3(-3,0,-6), new Vector3(-3,6,-6), new Vector3(-3,6,0), red));
+        world.add(new Quad(new Vector3(3,6,-6), new Vector3(3,0,-6), new Vector3(3,0,0), new Vector3(3,6,0), green));
         world.add(new Quad(new Vector3(-3,6,0), new Vector3(-3,6,-6), new Vector3(3,6,-6), new Vector3(3,6,0), white));
         world.add(new Quad(new Vector3(-3,0,0), new Vector3(3,0,0), new Vector3(3,0,-6), new Vector3(-3,0,-6), white));
         world.add(new Quad(new Vector3(-3,0,-6), new Vector3(3,0,-6), new Vector3(3,6,-6), new Vector3(-3,6,-6), white));
+        world.add(new Quad(new Vector3(-3,0,0), new Vector3(-3,6,0), new Vector3(3,6,0), new Vector3(3,0,0), white));      
+
+        world.add(new Cuboid(new Vector3(-1.7,0,-3.5), new Vector3(2,0,-0.5), new Vector3(0,4,0), new Vector3(-0.5,0,-2), white));
+        world.add(new Cuboid(new Vector3(0,0,-1.5), new Vector3(2,0,0.5), new Vector3(0,2,0), new Vector3(0.5,0,-2), white));
+
         world.add(new Quad(new Vector3(-1,6,-2), new Vector3(1,6,-2), new Vector3(1,6,-4), new Vector3(-1,6,-4), light));
 
         Global.world = world;
@@ -252,10 +261,12 @@ public class Main
     }
 
     public static void render(Camera cam, HittableList world) {
-        double startTime = (double) System.currentTimeMillis();
-        cam.render(world);
-        double endTime = (double) System.currentTimeMillis();
+        // double startTime = (double) System.currentTimeMillis();
+        // cam.render(world);
+        // double endTime = (double) System.currentTimeMillis();
         
-        System.out.println(((endTime - startTime) / 1000)+"s to render");
+        // System.out.println(((endTime - startTime) / 1000)+"s to render");
+
+        Global.master.render(12, cam);
     }
 }

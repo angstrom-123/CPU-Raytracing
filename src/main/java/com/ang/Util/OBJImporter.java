@@ -2,7 +2,7 @@ package com.ang.Util;
 
 import java.io.*;
 
-import com.ang.Hittables.Compound.Mesh;
+import com.ang.Hittable.Compound.Mesh;
 import com.ang.Material.Material;
 
 public class OBJImporter { 

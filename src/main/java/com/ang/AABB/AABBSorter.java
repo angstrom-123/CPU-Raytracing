@@ -1,6 +1,6 @@
 package com.ang.AABB;
 
-import com.ang.Hittables.Hittable;
+import com.ang.Hittable.Hittable;
 
 public class AABBSorter {
     public static Hittable[] sort(Hittable[] elements, int axis, int start, int end) {

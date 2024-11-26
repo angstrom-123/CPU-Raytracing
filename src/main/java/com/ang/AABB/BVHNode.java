@@ -1,7 +1,7 @@
 package com.ang.AABB;
 
-import com.ang.Hittables.Hittable;
-import com.ang.Hittables.HittableList;
+import com.ang.Hittable.Hittable;
+import com.ang.Hittable.HittableList;
 import com.ang.Util.HitRecord;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;

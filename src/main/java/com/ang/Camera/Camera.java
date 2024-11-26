@@ -1,6 +1,5 @@
 package com.ang.Camera;
 
-import com.ang.Hittables.HittableList;
 import com.ang.Render.Renderer;
 import com.ang.Util.HitRecord;
 import com.ang.Util.InputHandler;
@@ -10,8 +9,9 @@ import com.ang.Util.RayTracker;
 import com.ang.Util.Vector3;
 import com.ang.Global;
 import com.ang.MainInterface;
+import com.ang.Hittable.HittableList;
 
-public class Controller implements MainInterface{
+public class Camera implements MainInterface{
     public double aspectRatio = 1.0;
     public int imageWidth = 100;
     public int samplesPerPixel = 10;
@@ -38,7 +38,7 @@ public class Controller implements MainInterface{
 
     private Renderer renderer;
     private HittableList worldStore;
-    private CameraController controller;
+    private Controller controller;
     private boolean initDone = false;
 
     private double moveStep = 1;
@@ -68,7 +68,51 @@ public class Controller implements MainInterface{
         renderer.saveFile("");
     }
 
-    private void init() {
+    public Renderer getRenderer() {
+        return this.renderer;
+    }
+
+    public int getMaxBounces() {
+        return this.maxBounces;
+    }
+
+    public double getSamplesPerPixel() {
+        return this.samplesPerPixel;
+    }
+
+    public Vector3 getDeltaU() {
+        return this.pixelDeltaU;
+    }
+
+    public Vector3 getDeltaV() {
+        return this.pixelDeltaV;
+    }
+
+    public Vector3 getDefocusU() {
+        return this.defocusDiskU;
+    }
+
+    public Vector3 getDefocusV() {
+        return this.defocusDiskV;
+    }
+
+    public Vector3 getCentre() {
+        return this.centre;
+    }
+
+    public Vector3 getPixel0Pos() {
+        return this.pixel0Location;
+    }
+
+    public Vector3 getBackground() {
+        return this.background;
+    }
+
+    public double getDefocusAngle() {
+        return this.defocusAngle;
+    }
+
+    public void init() {
         // image
         imageHeight = (int) (imageWidth / aspectRatio);
         if (imageHeight < 1) {
@@ -93,7 +137,7 @@ public class Controller implements MainInterface{
         v = Vector3.cross(w, u); // up of view
 
         // camera movement class
-        controller = new CameraController(w, u, v, lookFrom, lookAt);
+        controller = new Controller(w, u, v, lookFrom, lookAt);
 
         // vectors along viewport edges
         Vector3 viewportU = u.multiply(viewportWidth); // vector across horizontal viewport edge

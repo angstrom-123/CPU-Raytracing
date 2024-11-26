@@ -4,12 +4,12 @@ import com.ang.Util.Ray;
 import com.ang.Util.Quaternion;
 import com.ang.Util.Vector3;
 
-public class CameraController {
+public class Controller {
     private Vector3 w, u, v;
     private Vector3 lf;
     private Vector3 la;
 
-    public CameraController(Vector3 w, Vector3 u, Vector3 v, Vector3 lf, Vector3 la) {
+    public Controller(Vector3 w, Vector3 u, Vector3 v, Vector3 lf, Vector3 la) {
         set(w, u, v, lf, la);
     }
 

@@ -1,6 +1,7 @@
 package com.ang;
 
-import com.ang.Hittables.HittableList;
+import com.ang.Hittable.HittableList;
+import com.ang.Thread.Master;
 
 public class Global {
     // constants
@@ -8,6 +9,7 @@ public class Global {
     public final static double pi = 3.1415926535897932385;
 
     public static HittableList world;
+    public static Master master;
 
     // util
     public static double deg2rad(double degrees) {

@@ -2,12 +2,14 @@ package com.ang.Render;
 
 // import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
 import javax.imageio.*;
 
+import com.ang.Global;
 import com.ang.Util.InputHandler;
 import com.ang.Util.Vector3;
 
@@ -15,7 +17,6 @@ public class Renderer extends JFrame{
     int width;
     int height;
 
-    private int[] pixels;
     private int index = 0;
 
     private BufferedImage img ;
@@ -27,7 +28,6 @@ public class Renderer extends JFrame{
     public Renderer(int w, int h) {
         width = w;
         height = h;
-        pixels = new int[w * h];
         img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         imgPanel = new ImagePanel(img);
 
@@ -37,7 +37,6 @@ public class Renderer extends JFrame{
     public Renderer(int w, int h, InputHandler handler) {
         width = w;
         height = h;
-        pixels = new int[w * h];
         img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         imgPanel = new ImagePanel(img);
 
@@ -46,14 +45,24 @@ public class Renderer extends JFrame{
         initWindow();
     }
 
+    public int getImageWidth() {
+        return width;
+    }
+
+    public int getImageHeight() {
+        return height;
+    }
+
     private void initWindow() {
-        frame.add(imgPanel);
-        frame.setSize(width, height);
+        imgPanel.setPreferredSize(new Dimension(width, height));
+        frame.getContentPane().add(imgPanel);
+        frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 frame.dispose();
+                Global.master.terminate();
             }
         });
         imgPanel.addKeyListener(handler);
@@ -91,16 +100,45 @@ public class Renderer extends JFrame{
         }
 
         int col = (rComponent << 16) | (gComponent << 8) | bCompoment;
-        pixels[index] = col;
         img.setRGB(index % width, (int)Math.floor(index / width) , col);
         index++;
 
         frame.repaint();
     }
 
+    public void writePixel(Vector3 unitColour, int x, int y) {
+        double r = unitColour.x();
+        double g = unitColour.y();
+        double b = unitColour.z();
+
+        // gamma correction
+        r = linear2gamma(r);
+        g = linear2gamma(g);
+        b = linear2gamma(b);
+
+        // 0-1 to 0-255
+        int rComponent = (int)Math.round(r * 255); 
+        int gComponent = (int)Math.round(g * 255); 
+        int bCompoment = (int)Math.round(b * 255); 
+
+        if (rComponent > 255) {
+            rComponent = 255;
+        }
+        if (gComponent > 255) {
+            gComponent = 255;
+        }
+        if (bCompoment > 255) {
+            bCompoment = 255;
+        }
+
+        int col = (rComponent << 16) | (gComponent << 8) | bCompoment;
+        img.setRGB(x, y, col);
+
+        frame.repaint();
+    }
+
     public void drawScreen() {
         frame.repaint();
-        index = 0;
     }
 
     private double linear2gamma(double linearComponent) {
