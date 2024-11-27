@@ -7,7 +7,6 @@ import com.ang.Hittable.Compound.Cuboid;
 import com.ang.Hittable.Compound.Mesh;
 import com.ang.Hittable.Compound.Quad;
 import com.ang.Hittable.Primitive.Sphere;
-import com.ang.Hittable.Primitive.Tri;
 import com.ang.Material.*;
 import com.ang.Texture.ImageTexture;
 import com.ang.Texture.SpatialCheckerTexture;
@@ -23,9 +22,9 @@ public class Main
     {
         Camera cam = new Camera();
 
-        cam.imageWidth = 200;
-        cam.samplesPerPixel = 125;
-        cam.maxBounces = 20;
+        cam.imageWidth = 1280;
+        cam.samplesPerPixel = 500;
+        cam.maxBounces = 50;
 
         switch (5) {
             case 1:
@@ -97,7 +96,7 @@ public class Main
 
         world.add(new BVHNode(world));
 
-        Global.world = world;
+        // Global.world = world;
 
         render(cam, world);
     }
@@ -158,7 +157,7 @@ public class Main
         
         world.add(new BVHNode(world));
 
-        Global.world = world;
+        // Global.world = world;
 
         render(cam, world);
     }
@@ -184,7 +183,7 @@ public class Main
 
         world.add(new BVHNode(world));
 
-        Global.world = world;
+        // Global.world = world;
 
         render(cam, world);
     }
@@ -217,15 +216,13 @@ public class Main
 
         world.add(new BVHNode(world));
 
-        Global.world = world;
+        // Global.world = world;
 
         render(cam, world);
     }
 
     public static void cornellBoxScene(Camera cam) {
         HittableList world = new HittableList(2000);
-
-        Global.world = world;
         
         cam.aspectRatio = 1.0 / 1.0;
 
@@ -254,19 +251,18 @@ public class Main
         world.add(new Cuboid(new Vector3(0,0,-1.5), new Vector3(2,0,0.5), new Vector3(0,2,0), new Vector3(0.5,0,-2), white));
 
         world.add(new Quad(new Vector3(-1,6,-2), new Vector3(1,6,-2), new Vector3(1,6,-4), new Vector3(-1,6,-4), light));
-
-        Global.world = world;
         
+        // Global.world = world;
+
         render(cam, world);
     }
 
     public static void render(Camera cam, HittableList world) {
-        // double startTime = (double) System.currentTimeMillis();
-        // cam.render(world);
-        // double endTime = (double) System.currentTimeMillis();
-        
-        // System.out.println(((endTime - startTime) / 1000)+"s to render");
+        cam.init();
 
-        Global.master.render(12, cam);
+        Master master = new Master(cam, world, 0, 0);
+        Global.master = master;
+
+        master.render(9);
     }
 }

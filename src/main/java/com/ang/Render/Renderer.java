@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.imageio.*;
 
 import com.ang.Global;
-import com.ang.Util.InputHandler;
 import com.ang.Util.Vector3;
 
 public class Renderer extends JFrame{
@@ -23,24 +22,11 @@ public class Renderer extends JFrame{
     private ImagePanel imgPanel;
     private JFrame frame = new JFrame();
 
-    private InputHandler handler;
-
     public Renderer(int w, int h) {
         width = w;
         height = h;
         img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         imgPanel = new ImagePanel(img);
-
-        initWindow();
-    }
-
-    public Renderer(int w, int h, InputHandler handler) {
-        width = w;
-        height = h;
-        img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        imgPanel = new ImagePanel(img);
-
-        this.handler = handler;
 
         initWindow();
     }
@@ -62,10 +48,9 @@ public class Renderer extends JFrame{
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 frame.dispose();
-                Global.master.terminate();
+                Global.terminateThreads();
             }
         });
-        imgPanel.addKeyListener(handler);
         imgPanel.setFocusable(true);
         imgPanel.requestFocusInWindow();
     }

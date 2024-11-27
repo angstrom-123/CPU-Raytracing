@@ -2,16 +2,14 @@ package com.ang.Camera;
 
 import com.ang.Render.Renderer;
 import com.ang.Util.HitRecord;
-import com.ang.Util.InputHandler;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.RayTracker;
 import com.ang.Util.Vector3;
 import com.ang.Global;
-import com.ang.MainInterface;
 import com.ang.Hittable.HittableList;
 
-public class Camera implements MainInterface{
+public class Camera {
     public double aspectRatio = 1.0;
     public int imageWidth = 100;
     public int samplesPerPixel = 10;
@@ -28,89 +26,33 @@ public class Camera implements MainInterface{
 
     private int imageHeight;
     private double pixelSamplesScale; // if 10 samples/pixel, contribute 10% each
-    private Vector3 centre;
-    private Vector3 pixel0Location;
-    private Vector3 pixelDeltaU;
-    private Vector3 pixelDeltaV;
+    
     private Vector3 u,v,w; // relative camera frame basis vectors
-    private Vector3 defocusDiskU;
-    private Vector3 defocusDiskV;
+
+    public Vector3 centre;
+    public Vector3 pixel0Location;
+    public Vector3 pixelDeltaU;
+    public Vector3 pixelDeltaV;
+    public Vector3 defocusDiskU;
+    public Vector3 defocusDiskV;
 
     private Renderer renderer;
-    private HittableList worldStore;
-    private Controller controller;
-    private boolean initDone = false;
 
-    private double moveStep = 1;
-    private double turnStep = 4;
+    // public void render(HittableList world) {
+    //     for (int j = 0; j < imageHeight; j++) {
+    //         for (int i = 0; i < imageWidth; i++) {
+    //             Vector3 pixelColour = new Vector3(0,0,0);
+    //             for (int sample = 0; sample < samplesPerPixel; sample++) {
+    //                 Ray r = getRay(i, j);
+    //                 pixelColour.ADD(rayColour(r, maxBounces, world));
+    //             }
+    //             renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
+    //         }
+    //     }
 
-    public void render(HittableList world) {
-        if (!initDone) {
-            worldStore = world;
-            init();
-            initDone = true;
-        } else {
-            update();
-        }
-
-        for (int j = 0; j < imageHeight; j++) {
-            for (int i = 0; i < imageWidth; i++) {
-                Vector3 pixelColour = new Vector3(0,0,0);
-                for (int sample = 0; sample < samplesPerPixel; sample++) {
-                    Ray r = getRay(i, j);
-                    pixelColour.ADD(rayColour(r, maxBounces, world));
-                }
-                renderer.writePixel(pixelColour.multiply(pixelSamplesScale));
-            }
-        }
-
-        renderer.drawScreen();
-        renderer.saveFile("");
-    }
-
-    public Renderer getRenderer() {
-        return this.renderer;
-    }
-
-    public int getMaxBounces() {
-        return this.maxBounces;
-    }
-
-    public double getSamplesPerPixel() {
-        return this.samplesPerPixel;
-    }
-
-    public Vector3 getDeltaU() {
-        return this.pixelDeltaU;
-    }
-
-    public Vector3 getDeltaV() {
-        return this.pixelDeltaV;
-    }
-
-    public Vector3 getDefocusU() {
-        return this.defocusDiskU;
-    }
-
-    public Vector3 getDefocusV() {
-        return this.defocusDiskV;
-    }
-
-    public Vector3 getCentre() {
-        return this.centre;
-    }
-
-    public Vector3 getPixel0Pos() {
-        return this.pixel0Location;
-    }
-
-    public Vector3 getBackground() {
-        return this.background;
-    }
-
-    public double getDefocusAngle() {
-        return this.defocusAngle;
-    }
+    //     renderer.drawScreen();
+    //     renderer.saveFile("");
+    // }
 
     public void init() {
         // image
@@ -121,7 +63,10 @@ public class Camera implements MainInterface{
 
         pixelSamplesScale = 1.0 / samplesPerPixel;
 
-        renderer = new Renderer(imageWidth, imageHeight, new InputHandler(this));
+        renderer = new Renderer(imageWidth, imageHeight);
+
+        Global.imageWidth = imageWidth;
+        Global.imageHeight = imageHeight;
 
         centre = lookFrom;
 
@@ -135,9 +80,6 @@ public class Camera implements MainInterface{
         w = (lookFrom.subtract(lookAt)).unitVector(); // opposite of view
         u = (Vector3.cross(vUp, w)).unitVector(); // right of view
         v = Vector3.cross(w, u); // up of view
-
-        // camera movement class
-        controller = new Controller(w, u, v, lookFrom, lookAt);
 
         // vectors along viewport edges
         Vector3 viewportU = u.multiply(viewportWidth); // vector across horizontal viewport edge
@@ -155,39 +97,20 @@ public class Camera implements MainInterface{
         double defocusRadius = focusDistance * Math.tan(Global.deg2rad(defocusAngle / 2));
         defocusDiskU = u.multiply(defocusRadius);
         defocusDiskV = v.multiply(defocusRadius);
+
     }
 
-    private void update() {        
-        centre = lookFrom;
+    public Renderer getRenderer() {
+        return renderer;
+    }
 
-        double theta = Global.deg2rad(fov);
-        double h = Math.tan(theta / 2);
-        double viewportHeight = 2 * h  * focusDistance;
-        double viewportWidth = viewportHeight * ((double) imageWidth / (double) imageHeight);
-       
-        // calculate relative camera basis vectors
-        w = (lookFrom.subtract(lookAt)).unitVector(); // opposite of view
-        u = (Vector3.cross(vUp, w)).unitVector(); // right of view
-        v = Vector3.cross(w, u); // up of view
+    public void sendPixelToRenderer(Vector3 unitCol, int x, int y) {
+        // System.out.println(unitCol.x());
+        renderer.writePixel(unitCol, x, y);
+    }
 
-        controller.set(w, u, v, lookFrom, lookAt);
-
-        // vectors along and down viewport
-        Vector3 viewportU = u.multiply(viewportWidth); // vector across horizontal viewport edge
-        Vector3 viewportV = (v.negative()).multiply(viewportHeight); // vector down vertical viewport edge
-
-        // vector between scan points
-        pixelDeltaU = viewportU.divide(imageWidth);
-        pixelDeltaV = viewportV.divide(imageHeight);
-
-        // top left pixel
-        Vector3 viewportTopLeft = centre.subtract((w.multiply(focusDistance)).add((viewportU.divide(2))).add((viewportV.divide(2))));
-        pixel0Location = viewportTopLeft.add((pixelDeltaU.add(pixelDeltaV)).multiply(0.5));
-
-        // calculate defocus disk basis vectors
-        double defocusRadius = focusDistance * Math.tan(Global.deg2rad(defocusAngle / 2));
-        defocusDiskU = u.multiply(defocusRadius);
-        defocusDiskV = v.multiply(defocusRadius);
+    public void saveFile(String path) {
+        renderer.saveFile(path);
     }
 
     private Ray getRay(int i, int j) {
@@ -239,61 +162,5 @@ public class Camera implements MainInterface{
     private Vector3 sampleDefocusDisk() {
         Vector3 p = Vector3.randomInUnitDisk();
         return centre.add(defocusDiskU.multiply(p.x())).add(defocusDiskV.multiply(p.y()));
-    }
-
-    public void moveForward() {
-        Vector3[] nextVectors = controller.move(0, 0, -1, moveStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void moveLeft() {
-        Vector3[] nextVectors = controller.move(-1, 0, 0, moveStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void moveBack() {
-        Vector3[] nextVectors = controller.move(0, 0, 1, moveStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void moveRight() {
-        Vector3[] nextVectors = controller.move(1, 0, 0, moveStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void turnUp() {
-        Vector3[] nextVectors = controller.turn(u.x(), u.y(), u.z(), turnStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void turnLeft() {
-        Vector3[] nextVectors = controller.turn(vUp.x(), vUp.y(), vUp.z(), turnStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void turnDown() {
-        Vector3[] nextVectors = controller.turn(-u.x(), -u.y(), -u.z(), turnStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
-    }
-
-    public void turnRight() {
-        Vector3[] nextVectors = controller.turn(-vUp.x(), -vUp.y(), -vUp.z(), turnStep);
-        lookFrom = nextVectors[0];
-        lookAt = nextVectors[1];
-        render(worldStore);
     }
 }

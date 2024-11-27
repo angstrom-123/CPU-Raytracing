@@ -1,6 +1,5 @@
 package com.ang;
 
-import com.ang.Hittable.HittableList;
 import com.ang.Thread.Master;
 
 public class Global {
@@ -8,7 +7,11 @@ public class Global {
     public final static double infinity = Double.MAX_VALUE;
     public final static double pi = 3.1415926535897932385;
 
-    public static HittableList world;
+    // info
+    public static int imageWidth;
+    public static int imageHeight;
+
+    // thread
     public static Master master;
 
     // util
@@ -18,5 +21,9 @@ public class Global {
 
     public static double randomInRange(double min, double max) {
         return min + (max - min) * Math.random();
+    }
+
+    public static void terminateThreads() {
+        master.forceStop();
     }
 }

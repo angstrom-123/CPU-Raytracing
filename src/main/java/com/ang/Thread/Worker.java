@@ -2,7 +2,6 @@ package com.ang.Thread;
 
 import com.ang.Camera.Camera;
 import com.ang.Hittable.HittableList;
-import com.ang.Render.Renderer;
 import com.ang.Util.HitRecord;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;
@@ -10,71 +9,55 @@ import com.ang.Util.RayTracker;
 import com.ang.Util.Vector3;
 import com.ang.Global;
 
-public class Worker implements Runnable {
-    private boolean isStop = false;
+public class Worker implements Runnable{
+    private ThreadListener listener;
+
     private int startRow;
     private int endRow;
-    private Renderer r;
+    private int startCol;
+    private int endCol;
 
-    private Vector3 centre;
-    private Vector3 pixel0Location;
-    private Vector3 deltaU;
-    private Vector3 deltaV;
-    private Vector3 defocusU;
-    private Vector3 defocusV;
-    private double samplesPerPixel;
-    private double defocusAngle;
-    private int maxBounces;
-    private Vector3 bg;
+    private HittableList world;
+    private Camera cam;
 
-    public Worker(int startRow, int endRow, Renderer r, Camera cam){
+    public Worker(int startCol, int endCol, int startRow, int endRow){        
         this.startRow = startRow;
         this.endRow = endRow;
-        this.r = r;
-
-        centre = cam.getCentre();
-        pixel0Location = cam.getPixel0Pos();
-        deltaU = cam.getDeltaU();
-        deltaV = cam.getDeltaV();
-        defocusU = cam.getDefocusU();
-        defocusV = cam.getDefocusV();
-        samplesPerPixel = cam.getSamplesPerPixel();
-        defocusAngle = cam.getDefocusAngle();
-        maxBounces = cam.getMaxBounces();
-        bg = cam.getBackground();
+        this.startCol = startCol;
+        this.endCol = endCol;
     }
 
-    public synchronized void doStop(){
-        this.isStop = true;
+    public void setData(HittableList world, Camera cam) {
+        this.world = world;
+        this.cam = cam;
     }
 
-    private synchronized boolean keepRunning(){
-        return this.isStop == false;
+    public void setListener(ThreadListener listener) {
+        this.listener = listener;
     }
 
     @Override
     public void run() {
-        if (keepRunning()) {
-            for (int j = startRow; j < endRow; j++) {
-                for (int i = 0; i < r.getImageWidth(); i++) {
-                    Vector3 pixelColour = new Vector3(0,0,0);
-                    for (int sample = 0; sample < samplesPerPixel; sample++) {
-                        Ray r = getRay(i, j);
-                        pixelColour.ADD(rayColour(r, maxBounces, Global.world));
-                    }
-                    r.writePixel(pixelColour.multiply(1 / samplesPerPixel), i, j);
+        for (int j = startRow; j < endRow; j++) {
+            for (int i = startCol; i < endCol; i++) {
+                Vector3 pixelColour = new Vector3(0,0,0);
+                for (int sample = 0; sample < cam.samplesPerPixel; sample++) {
+                    Ray r = getRay(i, j);
+                    pixelColour.ADD(rayColour(r, cam.maxBounces, world));
                 }
+                cam.sendPixelToRenderer(pixelColour.multiply((double)1 / (double)cam.samplesPerPixel), i, j);
             }
         }
+        listener.threadComplete();
     }
 
     private Ray getRay(int i, int j) {
         Vector3 offset = sampleSquare();
-        Vector3 pixelSample = pixel0Location.add(deltaU.multiply(i + offset.x()).add(deltaV.multiply(j + offset.y())));              
+        Vector3 pixelSample = cam.pixel0Location.add(cam.pixelDeltaU.multiply(i + offset.x()).add(cam.pixelDeltaV.multiply(j + offset.y())));              
         
         Vector3 rayOrigin;
-        if (defocusAngle <= 0) {
-            rayOrigin = centre;
+        if (cam.defocusAngle <= 0) {
+            rayOrigin = cam.centre;
         } else {
             rayOrigin = sampleDefocusDisk();
         }
@@ -99,7 +82,7 @@ public class Worker implements Runnable {
 
         // return background if ray missed the world
         if (!world.hit(r, new Interval(0.001, Global.infinity), rec)) {
-            return bg;
+            return cam.background;
         }
 
         RayTracker rt = new RayTracker(new Vector3(0,0,0), new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, 0)));
@@ -116,6 +99,6 @@ public class Worker implements Runnable {
 
     private Vector3 sampleDefocusDisk() {
         Vector3 p = Vector3.randomInUnitDisk();
-        return centre.add(defocusU.multiply(p.x())).add(defocusV.multiply(p.y()));
+        return cam.centre.add(cam.defocusDiskU.multiply(p.x())).add(cam.defocusDiskV.multiply(p.y()));
     }
 }
