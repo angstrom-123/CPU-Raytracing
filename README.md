@@ -8,6 +8,9 @@ Executable .jar files can be found in the target directory and can be run throug
 
 **IMPORTANT : By default renders are saved in the renders folder. For renders to be saved there you must be connected to the main project directory (not target) when running the .jar**
 
+## Config
+This program uses multithreading to speed up render times. Ideal thread count will vary between systems. Preliminary tests have shown that a baseline thread count should be equal to the number of high-power CPU cores in your system (such as Intel's "Performance cores") plus one. On my system this number is 9 and this is the default number in the executables. Weaker systems (and especially laptops) will likely experience ~50% performance increase by decreasing thread count to 2 or 3.
+
 ## Demos
 (Rendered at 500 samples per pixel and maximum depth of 50)
 ![2702551944162722](https://github.com/user-attachments/assets/1ed8d316-9d30-4ce9-9dde-9c8fecdf50c8)
