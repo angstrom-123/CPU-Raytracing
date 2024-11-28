@@ -7,28 +7,31 @@ import com.ang.Material.Material;
 import com.ang.Util.HitRecord;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
+// using counter clockwise winding order: see Tri.java
 public class Quad extends Hittable {
     private HittableList tris;
 
-    // abcd must be defined counter clockwise to have correct normals
-    // this is a result of winding order and is default in 3d graphics programs
-    public Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Material mat) {
+    // define in terms of all verticies
+    public Quad(Vec3 a, Vec3 b, Vec3 c, Vec3 d, Material mat) {
         tris = new HittableList(2);
 
+        // 2 coplanar triangles making up quad
         tris.add(new Tri(a, b, c, mat));
         tris.add(new Tri(a, c, d, mat));
     }
 
-    // define in terms of point and directions
-    public Quad(Vector3 a, Vector3 ab, Vector3 ad, Material mat) {
+    // define in terms of vertex coord and vectors along edges
+    public Quad(Vec3 a, Vec3 ab, Vec3 ad, Material mat) {
         tris = new HittableList(2);
 
-        Vector3 b = a.add(ab);
-        Vector3 c = b.add(ad);
-        Vector3 d = a.add(ad);
+        // verticies
+        Vec3 b = a.add(ab);
+        Vec3 c = b.add(ad);
+        Vec3 d = a.add(ad);
 
+        // 2 coplanar triangles making up quad
         tris.add(new Tri(a, b, c, mat));
         tris.add(new Tri(a, c, d, mat));
     }

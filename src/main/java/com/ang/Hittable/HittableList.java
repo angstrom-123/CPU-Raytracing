@@ -7,9 +7,11 @@ import com.ang.Util.Ray;
 
 public class HittableList {
     public Hittable[] hittables;
-    private int arrayIndex = 0;
-    private int maxHittables;
-    private AABB bBox = new AABB();
+
+    private AABB      bBox       = new AABB();
+    private int       arrayIndex = 0;
+
+    private int       maxHittables;
 
     public HittableList(int maxHittables) {
         this.maxHittables = maxHittables;
@@ -31,6 +33,7 @@ public class HittableList {
         return arrayIndex;
     }
 
+    // computes intersection points against all hittables in list
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
         HitRecord tempRec = new HitRecord();
         boolean hitAnything = false;
@@ -43,7 +46,8 @@ public class HittableList {
             }
 
             // if hit something, only searches for closer hits
-            if (hittables[i].hit(r, new Interval(tInterval.min, closestYet), tempRec)) {
+            Interval newBounds = new Interval(tInterval.min, closestYet);
+            if (hittables[i].hit(r, newBounds, tempRec)) {
                 hitAnything = true;
                 closestYet = tempRec.t;
                 rec.set(tempRec);

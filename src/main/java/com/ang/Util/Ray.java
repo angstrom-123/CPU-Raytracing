@@ -1,27 +1,28 @@
 package com.ang.Util;
 
 public class Ray {
-    private Vector3 origin;
-    private Vector3 direction;
+    private Vec3 origin;
+    private Vec3 direction;
 
-    public Ray(Vector3 origin, Vector3 direction) {
+    public Ray(Vec3 origin, Vec3 direction) {
         this.origin = origin;
         this.direction = direction;
     }
 
-    public Vector3 origin() {
+    public Vec3 origin() {
         return origin;
     }
 
-    public Vector3 direction() {
+    public Vec3 direction() {
         return direction;
     }
 
-    public Vector3 at(double t) {
+    // gets position of ray at a given length along it
+    public Vec3 at(double t) {
         return origin.add(direction.multiply(t));
     }
 
-    public void set(Vector3 origin, Vector3 direction) {
+    public void set(Vec3 origin, Vec3 direction) {
         this.origin = origin;
         this.direction = direction;
     }

@@ -2,7 +2,7 @@ package com.ang.Material;
 
 import com.ang.Texture.SolidColour;
 import com.ang.Texture.Texture;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
 public class Emissive extends Material{
     private Texture tex;
@@ -11,12 +11,13 @@ public class Emissive extends Material{
         this.tex = tex;
     }
 
-    public Emissive(Vector3 emit) {
+    public Emissive(Vec3 emit) {
         this.tex = new SolidColour(emit);
     }
 
+    // emissive overrides emissive property in material, no albedo
     @Override
-    public Vector3 emitted(double u, double v, Vector3 p) {
+    public Vec3 emitted(double u, double v, Vec3 p) {
         return tex.value(u, v, p);
     }
 }

@@ -1,7 +1,6 @@
 package com.ang;
 
 import com.ang.AABB.BVHNode;
-import com.ang.Camera.Camera;
 import com.ang.Hittable.HittableList;
 import com.ang.Hittable.Compound.Cuboid;
 import com.ang.Hittable.Compound.Mesh;
@@ -9,12 +8,12 @@ import com.ang.Hittable.Compound.Quad;
 import com.ang.Hittable.Primitive.Sphere;
 import com.ang.Material.*;
 import com.ang.Texture.ImageTexture;
-import com.ang.Texture.SpatialCheckerTexture;
+import com.ang.Texture.CheckerTexture;
 import com.ang.Texture.Texture;
 import com.ang.Thread.Master;
 import com.ang.Util.Interval;
 import com.ang.Util.OBJImporter;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
 public class Main 
 {
@@ -22,9 +21,9 @@ public class Main
     {
         Camera cam = new Camera();
 
-        cam.imageWidth = 1280;
-        cam.samplesPerPixel = 500;
-        cam.maxBounces = 50;
+        cam.imageWidth      = 426; // 240p
+        cam.samplesPerPixel = 100;
+        cam.maxBounces      = 20;
 
         switch (5) {
             case 1:
@@ -50,30 +49,34 @@ public class Main
 
         cam.aspectRatio = 16.0 / 9.0;
 
-        cam.fov = 20;
-        cam.lookFrom = new Vector3(13, 2, 3);
-        cam.lookAt = new Vector3(0, 0, 0);
-        cam.vUp = new Vector3(0, 1, 0);
+        cam.fov      = 20.0;
+        cam.lookFrom = new Vec3(13.0, 2.0, 3.0);
+        cam.lookAt   = new Vec3( 0.0, 0.0, 0.0);
+        cam.vUp      = new Vec3( 0.0, 1.0, 0.0);
 
-        cam.background = new Vector3(0.7, 0.8, 1);
+        cam.background = new Vec3(0.7, 0.8, 1.0);
 
-        cam.defocusAngle = 0.6;
-        cam.focusDistance = 10;
+        cam.defocusAngle  =  0.6;
+        cam.focusDistance = 10.0;
 
+        // random spheres
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
                 double chooseMat = Math.random();
-                Vector3 centre = new Vector3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
+                Vec3 centre = new Vec3(
+                    a + 0.9 * Math.random(), 
+                    0.2,
+                    b + 0.9 * Math.random());
 
-                if (centre.subtract(new Vector3(4, 0.2, 0)).length() > 0.9) {
+                if (centre.subtract(new Vec3(4.0, 0.2, 0.0)).length() > 0.9) {
                     Material sphereMaterial;
 
                     if (chooseMat < 0.8) {
-                        Vector3 albedo = Vector3.random().multiply(Vector3.random());
+                        Vec3 albedo = Vec3.random().multiply(Vec3.random());
                         sphereMaterial = new Lambertian(albedo);
                     } else if (chooseMat < 0.95) {
-                        Vector3 albedo = Vector3.random(0.5, 1);
-                        double fuzziness = Global.randomInRange(0, 0.5);
+                        Vec3 albedo = Vec3.random(0.5, 1.0);
+                        double fuzziness = Global.randomInRange(0.0, 0.5);
                         sphereMaterial = new Metal(albedo, fuzziness);
                     } else {
                         sphereMaterial = new Dielectric(1.5);
@@ -84,19 +87,17 @@ public class Main
             }
         }
 
-        Material ground = new Lambertian(new Vector3(0.5, 0.5, 0.5));
-        Material ball1 = new Dielectric(1.5);
-        Material ball2 = new Lambertian(new Vector3(0.4, 0.2, 0.1));
-        Material ball3 = new Metal(new Vector3(0.7, 0.6, 0.5), 0);
+        Material ground = new Lambertian(new Vec3(0.5, 0.5, 0.5));
+        Material ball1  = new Dielectric(1.5);
+        Material ball2  = new Lambertian(new Vec3(0.4, 0.2, 0.1));
+        Material ball3  = new Metal(new Vec3(0.7, 0.6, 0.5), 0.0);
 
-        world.add(new Sphere(new Vector3(0,-1000,0), 1000, ground));
-        world.add(new Sphere(new Vector3(0,1,0), 1, ball1));
-        world.add(new Sphere(new Vector3(-4,1,0), 1, ball2));
-        world.add(new Sphere(new Vector3(4,1,0), 1, ball3));
+        world.add(new Sphere(new Vec3( 0.0, -1000.0, 0.0), 1000.0, ground));
+        world.add(new Sphere(new Vec3( 0.0,     1.0, 0.0),    1.0, ball1));
+        world.add(new Sphere(new Vec3(-4.0,     1.0, 0.0),    1.0, ball2));
+        world.add(new Sphere(new Vec3( 4.0,     1.0, 0.0),    1.0, ball3));
 
         world.add(new BVHNode(world));
-
-        // Global.world = world;
 
         render(cam, world);
     }
@@ -106,34 +107,39 @@ public class Main
 
         cam.aspectRatio = 16.0 / 9.0;
 
-        cam.fov = 50;
-        cam.lookFrom = new Vector3(1, 1, 3);
-        cam.lookAt = new Vector3(0, 1, 0);
-        cam.vUp = new Vector3(0, 1, 0);
+        cam.fov      = 50.0;
+        cam.lookFrom = new Vec3(1.0, 1.0, 3.0);
+        cam.lookAt   = new Vec3(0.0, 1.0, 0.0);
+        cam.vUp      = new Vec3(0.0, 1.0, 0.0);
 
-        cam.background = new Vector3(0.7, 0.8, 1);
+        cam.background = new Vec3(0.7, 0.8, 1.0);
 
-        cam.defocusAngle = 1;
-        cam.focusDistance = 3;
+        cam.defocusAngle  = 1.0;
+        cam.focusDistance = 3.0;
 
-        Interval inter = new Interval(-1, 1);
+        // random spheres excluding centre
+        Interval inter = new Interval(-1.0, 1.0);
         for (int a = -11; a < 11; a++) {
             for (int b = -11; b < 11; b++) {
                 double chooseMat = Math.random();
-                Vector3 centre = new Vector3(a + 0.9 * Math.random(), 0.2, b + 0.9 * Math.random());
+                Vec3 centre = new Vec3(
+                    a + 0.9 * Math.random(),
+                    0.2, 
+                    b + 0.9 * Math.random());
 
-                if (inter.surrounds(centre.x()) && inter.surrounds(centre.z())) {
+                if ((inter.surrounds(centre.x())) 
+                && (inter.surrounds(centre.z()))) {
                     continue;
                 }
-                if (centre.subtract(new Vector3(4, 0.2, 0)).length() > 0.9) {
+                if (centre.subtract(new Vec3(4.0, 0.2, 0.0)).length() > 0.9) {
                     Material sphereMaterial;
 
                     if (chooseMat < 0.8) {
-                        Vector3 albedo = Vector3.random().multiply(Vector3.random());
+                        Vec3 albedo = Vec3.random().multiply(Vec3.random());
                         sphereMaterial = new Lambertian(albedo);
                     } else if (chooseMat < 0.95) {
-                        Vector3 albedo = Vector3.random(0.5, 1);
-                        double fuzziness = Global.randomInRange(0, 0.5);
+                        Vec3 albedo = Vec3.random(0.5, 1.0);
+                        double fuzziness = Global.randomInRange(0.0, 0.5);
                         sphereMaterial = new Metal(albedo, fuzziness);
                     } else {
                         sphereMaterial = new Dielectric(1.5);
@@ -143,21 +149,22 @@ public class Main
             }
         }
 
-        Texture checker = new SpatialCheckerTexture(0.32, new Vector3(0.2, 0.3, 0.1), new Vector3(0.9, 0.9, 0.9));
+        Vec3 col1 = new Vec3(0.2, 0.3, 0.1);
+        Vec3 col2 = new Vec3(0.9, 0.9, 0.9);
+        Texture groundTex = new CheckerTexture(0.32, col1, col2);
+        Material groundMat = new Lambertian(groundTex);
 
         Material glass = new Dielectric(1.5);
-        Material mirror = new Metal(new Vector3(0.7, 0.6, 0.5), 0.0);
+        Material mirror = new Metal(new Vec3(0.7, 0.6, 0.5), 0.0);
 
         OBJImporter importer = new OBJImporter();
-        Mesh knight = importer.loadOBJ(new Vector3(0,0,0), "/models/chess_knight.obj", glass);
+        Mesh knight = importer.loadOBJ("/models/chess_knight.obj", glass);
         
         world.add(knight);
-        world.add(new Sphere(new Vector3(3, 1, -3), 3.0, mirror));
-        world.add(new Sphere(new Vector3(0, -1000, 0), 1000, new Lambertian(checker)));
+        world.add(new Sphere(new Vec3(3.0,     1.0, -3.0),    3.0, mirror));
+        world.add(new Sphere(new Vec3(0.0, -1000.0,  0.0), 1000.0, groundMat));
         
         world.add(new BVHNode(world));
-
-        // Global.world = world;
 
         render(cam, world);
     }
@@ -167,23 +174,21 @@ public class Main
 
         cam.aspectRatio = 16.0 / 9.0;
 
-        cam.fov = 50;
-        cam.lookFrom = new Vector3(0, 0, 10);
-        cam.lookAt = new Vector3(0, 0, 0);
-        cam.vUp = new Vector3(0, 1, 0);
+        cam.fov      = 50.0;
+        cam.lookFrom = new Vec3(0.0, 0.0, 10.0);
+        cam.lookAt   = new Vec3(0.0, 0.0,  0.0);
+        cam.vUp      = new Vec3(0.0, 1.0,  0.0);
 
-        cam.background = new Vector3(0.7, 0.8, 1);
+        cam.background = new Vec3(0.7, 0.8, 1);
 
-        cam.defocusAngle = 0;
+        cam.defocusAngle = 0.0;
 
         Texture earthTexture = new ImageTexture("/textures/earth_map.jpg");
         Material earthSurface = new Lambertian(earthTexture);
 
-        world.add(new Sphere(new Vector3(0,0,0), 3, earthSurface));
+        world.add(new Sphere(new Vec3(0.0, 0.0, 0.0), 3.0, earthSurface));
 
         world.add(new BVHNode(world));
-
-        // Global.world = world;
 
         render(cam, world);
     }
@@ -193,30 +198,29 @@ public class Main
         
         cam.aspectRatio = 16.0 / 9.0;
 
-        cam.fov = 50;
-        cam.lookFrom = new Vector3(1, 1, 3);
-        cam.lookAt = new Vector3(0, 1, 0);
-        cam.vUp = new Vector3(0, 1, 0);
+        cam.fov      = 50.0;
+        cam.lookFrom = new Vec3(1.0, 1.0, 3.0);
+        cam.lookAt   = new Vec3(0.0, 1.0, 0.0);
+        cam.vUp      = new Vec3(0.0, 1.0, 0.0);
 
-        cam.background = new Vector3(0,0,0);
+        cam.defocusAngle = 0.0;
 
-        cam.defocusAngle = 0;
-
-        Texture checker = new SpatialCheckerTexture(0.32, new Vector3(0.2, 0.3, 0.1), new Vector3(0.9, 0.9, 0.9));
+        Vec3 col1 = new Vec3(0.2, 0.3, 0.1);
+        Vec3 col2 = new Vec3(0.9, 0.9, 0.9);
+        Texture groundTex = new CheckerTexture(0.32, col1, col2);
+        Material groundMat = new Lambertian(groundTex);
 
         Material glass = new Dielectric(1.5);
-        Material light = new Emissive(new Vector3(5,5,5));
+        Material light = new Emissive(new Vec3(5.0, 5.0, 5.0));
 
         OBJImporter importer = new OBJImporter();
-        Mesh knight = importer.loadOBJ(new Vector3(0,0,0), "/models/chess_knight.obj", glass);
+        Mesh knight = importer.loadOBJ("/models/chess_knight.obj", glass);
         
         world.add(knight);
-        world.add(new Sphere(new Vector3(0, -1000, 0), 1000, new Lambertian(checker)));
-        world.add(new Sphere(new Vector3(-3,2,-3), 1, light));
 
+        world.add(new Sphere(new Vec3( 0.0, -1000.0,  0.0), 1000.0, groundMat));
+        world.add(new Sphere(new Vec3(-3.0,     2.0, -3.0),    1.0, light));
         world.add(new BVHNode(world));
-
-        // Global.world = world;
 
         render(cam, world);
     }
@@ -226,34 +230,79 @@ public class Main
         
         cam.aspectRatio = 1.0 / 1.0;
 
-        cam.fov = 25;
-        cam.lookFrom = new Vector3(0, 3, 14);
-        cam.lookAt = new Vector3(0, 3, 0);
-        cam.vUp = new Vector3(0, 1, 0);
+        cam.fov      = 25.0;
+        cam.lookFrom = new Vec3(0.0, 3.0, 14.0);
+        cam.lookAt   = new Vec3(0.0, 3.0,  0.0);
+        cam.vUp      = new Vec3(0.0, 1.0,  0.0);
 
-        cam.background = new Vector3(0,0,0);
+        cam.defocusAngle = 0.0;
 
-        cam.defocusAngle = 0;
+        Material white = new Lambertian(new Vec3(0.73, 0.73, 0.73));
+        Material red   = new Lambertian(new Vec3(0.65, 0.05, 0.05));
+        Material green = new Lambertian(new Vec3(0.12, 0.45, 0.15));
 
-        Material white = new Lambertian(new Vector3(0.73, 0.73, 0.73));
-        Material red = new Lambertian(new Vector3(0.65,0.05,0.05));
-        Material green = new Lambertian(new Vector3(0.12, 0.45, 0.15));
-        Material light = new Emissive(new Vector3( 15, 13, 12));
+        Material light = new Emissive(new Vec3(15.0, 13.0, 12.0));
         
-        world.add(new Quad(new Vector3(-3,0,0), new Vector3(-3,0,-6), new Vector3(-3,6,-6), new Vector3(-3,6,0), red));
-        world.add(new Quad(new Vector3(3,6,-6), new Vector3(3,0,-6), new Vector3(3,0,0), new Vector3(3,6,0), green));
-        world.add(new Quad(new Vector3(-3,6,0), new Vector3(-3,6,-6), new Vector3(3,6,-6), new Vector3(3,6,0), white));
-        world.add(new Quad(new Vector3(-3,0,0), new Vector3(3,0,0), new Vector3(3,0,-6), new Vector3(-3,0,-6), white));
-        world.add(new Quad(new Vector3(-3,0,-6), new Vector3(3,0,-6), new Vector3(3,6,-6), new Vector3(-3,6,-6), white));
-        world.add(new Quad(new Vector3(-3,0,0), new Vector3(-3,6,0), new Vector3(3,6,0), new Vector3(3,0,0), white));      
+        // walls
+        world.add(new Quad(
+            new Vec3(-3.0, 0.0,  0.0), 
+            new Vec3(-3.0, 0.0, -6.0), 
+            new Vec3(-3.0, 6.0, -6.0), 
+            new Vec3(-3.0, 6.0,  0.0), 
+            red));
+        world.add(new Quad(
+            new Vec3(3.0, 6.0, -6.0), 
+            new Vec3(3.0, 0.0, -6.0), 
+            new Vec3(3.0, 0.0,  0.0), 
+            new Vec3(3.0, 6.0,  0.0), 
+            green));
+        world.add(new Quad(
+            new Vec3(-3.0, 6.0,  0.0), 
+            new Vec3(-3.0, 6.0, -6.0), 
+            new Vec3( 3.0, 6.0, -6.0), 
+            new Vec3( 3.0, 6.0,  0.0), 
+            white));
+        world.add(new Quad(
+            new Vec3(-3.0, 0.0,  0.0), 
+            new Vec3( 3.0, 0.0,  0.0), 
+            new Vec3( 3.0, 0.0, -6.0), 
+            new Vec3(-3.0, 0.0, -6.0), 
+            white));
+        world.add(new Quad(
+            new Vec3(-3.0, 0.0, -6.0), 
+            new Vec3( 3.0, 0.0, -6.0), 
+            new Vec3( 3.0, 6.0, -6.0), 
+            new Vec3(-3.0, 6.0, -6.0), 
+            white));
+        world.add(new Quad(
+            new Vec3(-3.0, 0.0, 0.0), 
+            new Vec3(-3.0, 6.0, 0.0), 
+            new Vec3( 3.0, 6.0, 0.0), 
+            new Vec3( 3.0, 0.0, 0.0), 
+            white));      
 
-        world.add(new Cuboid(new Vector3(-1.7,0,-3.5), new Vector3(2,0,-0.5), new Vector3(0,4,0), new Vector3(-0.5,0,-2), white));
-        world.add(new Cuboid(new Vector3(0,0,-1.5), new Vector3(2,0,0.5), new Vector3(0,2,0), new Vector3(0.5,0,-2), white));
+        // boxes
+        world.add(new Cuboid(
+            new Vec3(-1.7, 0.0, -3.5), 
+            new Vec3( 2.0, 0.0, -0.5), 
+            new Vec3( 0.0, 4.0,  0.0), 
+            new Vec3(-0.5, 0.0, -2.0), 
+            white));
+        world.add(new Cuboid(
+            new Vec3(0.0, 0.0, -1.5), 
+            new Vec3(2.0, 0.0,  0.5), 
+            new Vec3(0.0, 2.0,  0.0), 
+            new Vec3(0.5, 0.0, -2.0), 
+            white));
 
-        world.add(new Quad(new Vector3(-1,6,-2), new Vector3(1,6,-2), new Vector3(1,6,-4), new Vector3(-1,6,-4), light));
+        // light
+        world.add(new Quad(
+            new Vec3(-1.0, 6.0, -2.0), 
+            new Vec3( 1.0, 6.0, -2.0), 
+            new Vec3( 1.0, 6.0, -4.0), 
+            new Vec3(-1.0, 6.0, -4.0), 
+            light));
         
-        // Global.world = world;
-
         render(cam, world);
     }
 
@@ -263,6 +312,6 @@ public class Main
         Master master = new Master(cam, world, 0, 0);
         Global.master = master;
 
-        master.render(9);
+        master.render(3);
     }
 }

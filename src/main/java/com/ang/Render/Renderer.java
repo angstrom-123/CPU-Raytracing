@@ -1,6 +1,5 @@
 package com.ang.Render;
 
-// import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import java.awt.event.*;
@@ -10,22 +9,20 @@ import javax.swing.*;
 import javax.imageio.*;
 
 import com.ang.Global;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
 public class Renderer extends JFrame{
-    int width;
-    int height;
-
-    private int index = 0;
+    private JFrame        frame = new JFrame();
 
     private BufferedImage img ;
-    private ImagePanel imgPanel;
-    private JFrame frame = new JFrame();
+    private ImagePanel    imgPanel;
+    private int           width;
+    private int           height;
 
     public Renderer(int w, int h) {
-        width = w;
-        height = h;
-        img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        width    = w;
+        height   = h;
+        img      = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         imgPanel = new ImagePanel(img);
 
         initWindow();
@@ -40,17 +37,22 @@ public class Renderer extends JFrame{
     }
 
     private void initWindow() {
+        // ensures correct dimensions
         imgPanel.setPreferredSize(new Dimension(width, height));
         frame.getContentPane().add(imgPanel);
         frame.pack();
+
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        // shuts down threads when window is closed
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 frame.dispose();
                 Global.terminateThreads();
             }
         });
+
         imgPanel.setFocusable(true);
         imgPanel.requestFocusInWindow();
     }
@@ -59,7 +61,8 @@ public class Renderer extends JFrame{
         frame.dispose();
     }
 
-    public void writePixel(Vector3 unitColour) {
+    // unitColour is a 0-1 normalized vector in linear colour space
+    public void writePixel(Vec3 unitColour, int x, int y) {
         double r = unitColour.x();
         double g = unitColour.y();
         double b = unitColour.z();
@@ -69,56 +72,22 @@ public class Renderer extends JFrame{
         g = linear2gamma(g);
         b = linear2gamma(b);
 
-        // 0-1 to 0-255
+        // multiply to be in range 0-255 for output
         int rComponent = (int)Math.round(r * 255); 
         int gComponent = (int)Math.round(g * 255); 
-        int bCompoment = (int)Math.round(b * 255); 
+        int bComponent = (int)Math.round(b * 255); 
 
-        if (rComponent > 255) {
-            rComponent = 255;
-        }
-        if (gComponent > 255) {
-            gComponent = 255;
-        }
-        if (bCompoment > 255) {
-            bCompoment = 255;
-        }
+        // clamping values to 0-255
+        rComponent = rComponent > 255 ? rComponent = 255 : rComponent;
+        gComponent = gComponent > 255 ? gComponent = 255 : gComponent;
+        bComponent = bComponent > 255 ? bComponent = 255 : bComponent;
 
-        int col = (rComponent << 16) | (gComponent << 8) | bCompoment;
-        img.setRGB(index % width, (int)Math.floor(index / width) , col);
-        index++;
-
-        frame.repaint();
-    }
-
-    public void writePixel(Vector3 unitColour, int x, int y) {
-        double r = unitColour.x();
-        double g = unitColour.y();
-        double b = unitColour.z();
-
-        // gamma correction
-        r = linear2gamma(r);
-        g = linear2gamma(g);
-        b = linear2gamma(b);
-
-        // 0-1 to 0-255
-        int rComponent = (int)Math.round(r * 255); 
-        int gComponent = (int)Math.round(g * 255); 
-        int bCompoment = (int)Math.round(b * 255); 
-
-        if (rComponent > 255) {
-            rComponent = 255;
-        }
-        if (gComponent > 255) {
-            gComponent = 255;
-        }
-        if (bCompoment > 255) {
-            bCompoment = 255;
-        }
-
-        int col = (rComponent << 16) | (gComponent << 8) | bCompoment;
+        // consolidating rgb values to single integer, 1 byte per component
+        // first byte is alpha, not set as this defaults to 255 (full opacity)
+        int col = (rComponent << 16) | (gComponent << 8) | bComponent;
         img.setRGB(x, y, col);
 
+        // redrawing only for visualization purposes, likely hurts performance
         frame.repaint();
     }
 
@@ -126,6 +95,7 @@ public class Renderer extends JFrame{
         frame.repaint();
     }
 
+    // gamma correction, square rooting component
     private double linear2gamma(double linearComponent) {
         if (linearComponent > 0) {
             return Math.sqrt(linearComponent);
@@ -134,12 +104,12 @@ public class Renderer extends JFrame{
     }
 
     public void saveFile(String path) {
-        File file = new File("renders/"+path+String.valueOf(Math.random()).substring(2)+".png");
+        String randomName = String.valueOf(Math.random()).substring(2);
+        File file = new File("renders/" + path + randomName + ".png");
         try {
             ImageIO.write(img, "png", file);
         } catch (IOException e) {
             System.out.println("exception in save file");
         }
-        // frame.dispose();
     }
 }

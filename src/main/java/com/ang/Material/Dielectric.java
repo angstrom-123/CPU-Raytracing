@@ -3,55 +3,54 @@ package com.ang.Material;
 import com.ang.Util.HitRecord;
 import com.ang.Util.Ray;
 import com.ang.Util.RayTracker;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
 public class Dielectric extends Material{
     private double refractiveIndex;
-    private Vector3 albedo;
+    private Vec3 albedo;
 
-    public Dielectric(Vector3 albedo, double refractiveIndex) {
+    public Dielectric(Vec3 albedo, double refractiveIndex) {
         this.refractiveIndex = refractiveIndex;
         this.albedo = albedo;
     }
 
     public Dielectric(double refractiveIndex) {
         this.refractiveIndex = refractiveIndex;
-        this.albedo = new Vector3(1.0,1.0,1.0);
+        this.albedo = new Vec3(1.0, 1.0, 1.0);
     }
 
     @Override
     public boolean scatter(Ray rIn, HitRecord rec, RayTracker rt) {
-        double ri;
-        if (rec.frontFace) {
-            ri = 1.0 / refractiveIndex;
-        } else {
-            ri = refractiveIndex;
-        }
-        Vector3 unitDirection = rIn.direction().unitVector();
+        // calculates relative refractive index if ray is entering or leaving
+        double ri = (rec.frontFace) 
+        ? (1.0 / refractiveIndex) 
+        : (refractiveIndex);
 
-        double cosTheta = Math.min(Vector3.dot(unitDirection.negative(), rec.normal), 1.0);
-        double sinTheta = Math.sqrt(1.0 - cosTheta*cosTheta);
+        Vec3 dir = rIn.direction().unitVector();
 
-        Vector3 direction;
+        // values for Snell's law calculation
+        double cosTheta = Math.min(Vec3.dot(dir.negative(), rec.normal),1);
+        double sinTheta = Math.sqrt(1 - cosTheta*cosTheta);
 
-        // snells law
-        // glancing rays reflect
-        // mostly direct rays refract
-        if (ri * sinTheta > 1.0 || reflectance(cosTheta, ri) > Math.random()) {
+        Vec3 direction;
+
+        // Snell's law : glancing rays reflect, mostly direct rays refract
+        double choose = Math.random();
+        if ((ri * sinTheta > 1.0) || (reflectance(cosTheta, ri) > choose)) {
             // must reflect 
-            direction = Vector3.reflect(unitDirection, rec.normal);
+            direction = Vec3.reflect(dir, rec.normal);
         } else {
             // can refract
-            direction = Vector3.refract(unitDirection, rec.normal, ri);
+            direction = Vec3.refract(dir, rec.normal, ri);
         }
 
+        // updates ray colour and scatter direction for next iteration
         rt.set(albedo, new Ray(rec.p, direction));
-
         return true;
     }
 
     private double reflectance(double cosTheta, double ri) {
-        // schlick's approximation of reflectance coefficient
+        // Schlick's approximation of reflectance coefficient
         double r0 = (1 - ri) / (1 + ri);
         r0 = r0 * r0;
         return r0 + (1 - r0) * Math.pow((1 - cosTheta), 5.0);

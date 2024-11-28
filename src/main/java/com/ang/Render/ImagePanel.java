@@ -12,6 +12,7 @@ public class ImagePanel extends JPanel
         this.image = image;
     }
 
+    // overwriting paintComponent to write individual pixels
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

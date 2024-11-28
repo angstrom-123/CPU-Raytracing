@@ -55,7 +55,7 @@ public class Interval {
     }
 
     public Interval expand(double delta) {
-        double padding = delta / 2;
+        double padding = delta / 2.0;
         return new Interval(min - padding, max + padding);
     }
 

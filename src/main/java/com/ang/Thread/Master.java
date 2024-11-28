@@ -1,52 +1,49 @@
 package com.ang.Thread;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.ang.Camera;
 import com.ang.Global;
-import com.ang.Camera.Camera;
 import com.ang.Hittable.HittableList;
 
 public class Master implements ThreadListener {
+    private int                     activeThreads = 0;
+
     private BlockingQueue<Runnable> taskQueue;
-    private ExecutorService executorService;
-
-    private int activeThreads = 0;
-
-    private int[][] tileSizes;
-    private int completedTiles;
-
-    private int imageWidth;
-    private int imageHeight;
-
-    private int idealTileX;
-    private int idealTileY;
-
-    private double startTime;
-
-    private Camera cam;
-    private HittableList world;
+    private ExecutorService         executorService;
+    private Camera                  cam;
+    private HittableList            world;
+    private double                  startTime;
+    private int                     tileX, tileY;
+    private int                     imageWidth, imageHeight;
+    private int                     usedTiles;
+    private int[][]                 tileSizes;
 
     public Master(Camera cam, HittableList world, int tileX, int tileY) {
-        this.cam = cam;
-        this.world = world;
+        this.cam    = cam;
+        this.world  = world;
+        this.tileX  = tileX;
+        this.tileY  = tileY;
 
-        idealTileX = tileX;
-        idealTileY = tileY;
+        imageWidth  = Global.imageWidth;
+        imageHeight = Global.imageHeight;
     }
 
+    // when thread sends notification that it is done, it is reassigned to a
+    // new block or parked.
     @Override
     public void threadComplete() {
-        if (completedTiles == tileSizes.length) {
-            // shutDown();
+        // if all tiles are done and all threads are parked, shuts down 
+        if (usedTiles == tileSizes.length) {
             activeThreads--;
             if (activeThreads == 0) {
                 shutDown();
             }
         } else {
-            int[] data = tileSizes[completedTiles];
+            int[] data = tileSizes[usedTiles];
 
             Worker worker = new Worker(data[0], data[1], data[2], data[3]);
             worker.setListener(this);
@@ -54,7 +51,7 @@ public class Master implements ThreadListener {
 
             addTask(worker);
 
-            completedTiles++;
+            usedTiles++;
         }
     }
 
@@ -70,30 +67,34 @@ public class Master implements ThreadListener {
 
     public void shutDown() {
         cam.saveFile("");
+        
         executorService.shutdown();
-        System.out.println((((double)System.currentTimeMillis() - startTime) / 1000)+"s To render");
+
+        double endTime = System.currentTimeMillis();
+        System.out.println(((endTime- startTime) / 1000.0)+"s To render");
     }
 
     public void render(int threadCount) {
         taskQueue = new LinkedBlockingQueue<>();
         executorService = Executors.newFixedThreadPool(threadCount);
 
-        imageWidth = Global.imageWidth;
-        imageHeight = Global.imageHeight;
+        // auto calculates tile sizes if not defined
+        tileX = (tileX == 0) 
+        ? imageWidth 
+        : tileX;
 
-        if (idealTileX == 0) {
-            idealTileX = imageWidth;
-        }
-        if (idealTileY == 0) {
-            idealTileY = (int)Math.floor(imageHeight / threadCount);
-        }
+        tileY = (tileY == 0) 
+        ? ((int)Math.floor(imageHeight / threadCount))
+        : (tileY);
 
-        tileSizes = prefetchTileDimensions();
-        completedTiles = 0;
+        // init
+        calculateTileSizes();
+        usedTiles = 0;
         startTime = (double)System.currentTimeMillis();
 
+        // creates new workers to render tiles equal to threadCount
         for (int i = 0; i < threadCount; i++) {
-            int[] data = tileSizes[completedTiles];
+            int[] data = tileSizes[usedTiles];
 
             Worker worker = new Worker(data[0], data[1], data[2], data[3]);
             worker.setListener(this);
@@ -102,33 +103,35 @@ public class Master implements ThreadListener {
             addTask(worker);
             activeThreads++;
             
-            completedTiles++;
+            usedTiles++;
         }
     }
 
-    private int[][] prefetchTileDimensions() {
-        int a = (int)Math.floor(imageWidth / idealTileX);
-        int ar = imageWidth % idealTileX;
+    // calculate dimensions of each tile based on ideal dimensions
+    private void calculateTileSizes() {
+        // calculates amount of full tiles along each axis and remainders
+        int xCount = (int)Math.floor(imageWidth / tileX);
+        int remX = imageWidth % tileX;
 
-        int b = (int)Math.floor(imageHeight / idealTileY);
-        int br = imageHeight % idealTileY;
+        int yCount = (int)Math.floor(imageHeight / tileY);
+        int remY = imageHeight % tileY;
 
-        int[][] output = new int[a*b+ar+br][4];
-        int index = 0;
+        tileSizes = new int[(xCount * yCount) + remX + remY][4];
     
-        for (int x = 0; (ar == 0) ? (x < a) : (x <= a); x++) {
-            for (int y = 0; (br == 0) ? (y < b) : (y <= b); y++) {
-                int startX = x * idealTileX;
-                int startY = y * idealTileY;
+        // calculates start and end coords of each block
+        int index = 0;
+        for (int x = 0; (remX == 0) ? (x < xCount) : (x <= xCount); x++) {
+            for (int y = 0; (remY == 0) ? (y < yCount) : (y <= yCount); y++) {
+                int startX = x * tileX;
+                int startY = y * tileY;
 
-                int endX = x < a ? startX + idealTileX : imageWidth;
-                int endY = y < b ? startY + idealTileY : imageHeight;
+                // remainders are added to the final tiles in each row / column
+                int endX = (x < xCount) ? (startX + tileX) : imageWidth;
+                int endY = (y < yCount) ? (startY + tileY) : imageHeight;
 
-                output[index] = new int[]{startX, endX, startY, endY};
+                tileSizes[index] = new int[]{startX, endX, startY, endY};
                 index++;
             }
         }
-
-        return output;
     }
 }

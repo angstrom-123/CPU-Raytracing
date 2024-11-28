@@ -5,31 +5,31 @@ import com.ang.Texture.Texture;
 import com.ang.Util.HitRecord;
 import com.ang.Util.Ray;
 import com.ang.Util.RayTracker;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
 public class Lambertian extends Material{
     private Texture tex;
 
-    public Lambertian(Vector3 albedo) {
+    public Lambertian(Vec3 albedo) {
         tex = new SolidColour(albedo);
     }
 
     public Lambertian(Texture tex) {
         this.tex = tex;
     }
-    boolean saved = false;
 
     @Override
     public boolean scatter(Ray rIn, HitRecord rec, RayTracker rt) {
-        Vector3 scatterDirection = rec.normal.add(Vector3.randomUnitVector());
+        Vec3 direction = rec.normal.add(Vec3.randomUnitVector());
         
-        // if scatter direction is oposite to normal, it becomes almost 0,0,0
-        if (scatterDirection.nearZero()) {
-            scatterDirection = rec.normal;
+        // if scatter direction is opposite to normal, it becomes almost 0,0,0
+        // this case is caught and replaced by normal
+        if (direction.nearZero()) {
+            direction = rec.normal;
         }
 
-        rt.set(tex.value(rec.u, rec.v, rec.p), new Ray(rec.p, scatterDirection));
-
+        // updates ray colour and scatter direction for next iteration
+        rt.set(tex.value(rec.u, rec.v, rec.p), new Ray(rec.p, direction));
         return true;
     }
 }

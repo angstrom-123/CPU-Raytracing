@@ -3,24 +3,22 @@ package com.ang.AABB;
 import com.ang.Hittable.Hittable;
 
 public class AABBSorter {
-    public static Hittable[] sort(Hittable[] elements, int axis, int start, int end) {
-        boolean swapped;
-        Hittable temp;
+    public static Hittable[] sort(Hittable[] arr, int ax, int start, int end) {
+        Hittable[] sortingArray = new Hittable[end - start];
 
-        Hittable[] sortingArray = new Hittable[end-start];
-        int arrayIndex = 0;
-
-        for (int i = start; i < end; i++) {
-            sortingArray[arrayIndex] = elements[i];
-            arrayIndex++;
+        for (int i = 0; i < end - start; i++) {
+            sortingArray[i] = arr[start + i];
         }
         
         for (int i = 0; i < sortingArray.length; i++) {
-            swapped = false;
+            boolean swapped = false;
 
             for (int j = 0; j < sortingArray.length - i - 1; j++) {
-                if (sortingArray[j].bBox().axisInterval(axis).size() > sortingArray[j + 1].bBox().axisInterval(axis).size()) {
-                    temp = sortingArray[j];
+                double a = sortingArray[j].bBox().axisInterval(ax).size();
+                double b = sortingArray[j + 1].bBox().axisInterval(ax).size();
+
+                if (a > b) {
+                    Hittable temp = sortingArray[j];
                     sortingArray[j] = sortingArray[j + 1];
                     sortingArray[j + 1] = temp;
                     swapped = true;
@@ -32,10 +30,10 @@ public class AABBSorter {
             }
         }
         
-        for (int i = 0; i < (end-start); i++) {
-            elements[start+i] = sortingArray[i];
+        for (int i = 0; i < end - start; i++) {
+            arr[start + i] = sortingArray[i];
         }
 
-        return elements;
+        return arr;
     }
 }

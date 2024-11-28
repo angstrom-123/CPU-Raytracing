@@ -3,7 +3,7 @@ package com.ang.AABB;
 import com.ang.Util.HitRecord;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;
-import com.ang.Util.Vector3;
+import com.ang.Util.Vec3;
 
 public class AABB {
     public Interval x, y, z;
@@ -22,7 +22,7 @@ public class AABB {
     }
 
     // define in terms of 3d coords of corners
-    public AABB(Vector3 a, Vector3 b) {
+    public AABB(Vec3 a, Vec3 b) {
         // converting coords to intervals
         if (a.x() <= b.x()) {
             x = new Interval(a.x(), b.x());
@@ -42,14 +42,15 @@ public class AABB {
             z = new Interval(b.z(), a.z());
         }
 
+        // if an interval is extremely small, it is expanded
         if (x.size() < 1E-8) {
-            x.expand(2E-8);
+            x.expand(1E-8);
         }
         if (y.size() < 1E-8) {
-            y.expand(2E-8);
+            y.expand(1E-8);
         }
         if (z.size() < 1E-8) {
-            z.expand(2E-8);
+            z.expand(1E-8);
         }
     }
 
@@ -60,6 +61,7 @@ public class AABB {
         z = new Interval(box0.z, box1.z);
     }
 
+    // converts integer 0-2 to axis x-z
     public Interval axisInterval(int n) {
         switch(n) {
             case 0:
@@ -71,6 +73,7 @@ public class AABB {
         }
     }
 
+    // returns largest axis as integer 0-2
     public int largestAxis() {
         if (x.size() > y.size() && x.size() > z.size()) {
             return 0; // x
@@ -81,17 +84,20 @@ public class AABB {
         return 2; // z
     }
 
+    // ray slab intersection
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
-        Vector3 rayOrigin = r.origin();
-        Vector3 rayDir = r.direction();
+        Vec3 rayOrigin = r.origin();
+        Vec3 rayDir = r.direction();
 
         for (int axis = 0; axis < 3; axis++) {
+            // calculate t value for possible intersection points
             Interval axIn = axisInterval(axis);
             double axDirInv = 1.0 / rayDir.e[axis];
 
             double t0 = (axIn.min - rayOrigin.e[axis]) * axDirInv; // low
             double t1 = (axIn.max - rayOrigin.e[axis]) * axDirInv; // high
 
+            // reduces size of interval if an intersection is found inside it
             if (t0 < t1) {
                 if (t0 > tInterval.min) {
                     tInterval.setMin(t0);
@@ -117,10 +123,12 @@ public class AABB {
     }
 
     public static AABB empty() {
-        return new AABB(Interval.empty(), Interval.empty(), Interval.empty());
+        Interval empty = Interval.empty();
+        return new AABB(empty, empty, empty);
     }
 
     public static AABB universe() {
-        return new AABB(Interval.universe(), Interval.universe(), Interval.universe());
+        Interval universe = Interval.universe();
+        return new AABB(universe, universe, universe);
     }
 }
