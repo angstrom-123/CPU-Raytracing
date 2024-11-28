@@ -46,15 +46,18 @@ public class OBJImporter {
 
     // reads data from obj file 
     private void extractData(String path) throws Exception{
-        InputStream s = this.getClass().getResourceAsStream(path);
-        BufferedReader counter = new BufferedReader(new InputStreamReader(s));
+        InputStream s;
+        BufferedReader reader;
+
+        s = this.getClass().getResourceAsStream(path);
+        reader = new BufferedReader(new InputStreamReader(s));
         int vLineCount  = 0;
         int fLineCount  = 0;
         int vnLineCount = 0;
         
         // counts amount of data items of each type
         String line;
-        while ((line = counter.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             if ((line.charAt(0) == 'v') && (line.charAt(1) == ' ')) {
                 vLineCount++;
             }
@@ -72,7 +75,8 @@ public class OBJImporter {
         vertexIndices = new int[fLineCount][3];
         normalIndices = new int[fLineCount][3];
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(s));
+        s = this.getClass().getResourceAsStream(path);
+        reader = new BufferedReader(new InputStreamReader(s));
 
         int vIndex  = 0;
         int fIndex  = 0;
@@ -122,7 +126,6 @@ public class OBJImporter {
             }
         }
 
-        counter.close();
         reader.close();
     }
 }

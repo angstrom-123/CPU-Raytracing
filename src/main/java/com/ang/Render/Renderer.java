@@ -18,14 +18,14 @@ public class Renderer extends JFrame{
     private ImagePanel    imgPanel;
     private int           width;
     private int           height;
+    private boolean       initDone;
 
     public Renderer(int w, int h) {
         width    = w;
         height   = h;
         img      = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         imgPanel = new ImagePanel(img);
-
-        initWindow();
+        initDone = false;
     }
 
     public int getImageWidth() {
@@ -48,8 +48,8 @@ public class Renderer extends JFrame{
         // shuts down threads when window is closed
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
-                frame.dispose();
                 Global.terminateThreads();
+                frame.dispose();
             }
         });
 
@@ -63,6 +63,11 @@ public class Renderer extends JFrame{
 
     // unitColour is a 0-1 normalized vector in linear colour space
     public void writePixel(Vec3 unitColour, int x, int y) {
+        if (!initDone) {
+            initWindow();
+            initDone = true;
+        }
+
         double r = unitColour.x();
         double g = unitColour.y();
         double b = unitColour.z();

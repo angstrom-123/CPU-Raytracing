@@ -7,10 +7,12 @@ com\ang\Texture\CheckerTexture.class
 com\ang\Material\Emissive.class
 com\ang\Hittable\Compound\Cuboid.class
 com\ang\Hittable\Compound\Mesh.class
+com\ang\Menu$1.class
 com\ang\Util\Interval.class
 com\ang\Texture\Texture.class
 com\ang\Util\ImageHandler.class
 com\ang\Hittable\Compound\Quad.class
+com\ang\Menu$2.class
 com\ang\Util\Vec3.class
 com\ang\Main.class
 com\ang\Thread\Master.class
@@ -20,6 +22,7 @@ com\ang\AABB\AABB.class
 com\ang\Texture\ImageTexture.class
 com\ang\Material\Lambertian.class
 com\ang\AABB\AABBSorter.class
+com\ang\ConfigHandler.class
 com\ang\AABB\BVHNode.class
 com\ang\Global.class
 com\ang\Hittable\Hittable.class
@@ -33,3 +36,5 @@ com\ang\Material\Metal.class
 com\ang\Thread\ThreadListener.class
 com\ang\Util\Ray.class
 com\ang\Hittable\Primitive\Tri.class
+com\ang\Menu.class
+com\ang\Menu$3.class
