@@ -1,3 +1,23 @@
-This is a small personal project intended to experiment with path tracing using Java.
-I made use of the articles "Ray Tracing in One Weekend" and "Ray Tracing: The Next Week" for 
-my basic implementation.
+# CPU Raytracing
+Toy CPU path tracer written entirely in Java.
+
+## Running
+Requires an installation of at least JDK-21.
+
+Executable .jar files can be found in the target directory and can be run through the terminal by executing "java -jar target/demo_name.jar".
+
+**IMPORTANT : By default renders are saved in the renders folder. For renders to be saved there you must be connected to the main project directory (not target) when running the .jar**
+
+## Config
+This program uses multithreading to speed up render times. Ideal thread count will vary between systems. Preliminary tests have shown that a baseline thread count should be equal to the number of high-power CPU cores in your system (such as Intel's "Performance cores") plus one. On my system this number is 9 and this is the default number in the executables. Weaker systems (and especially laptops) will likely experience ~50% performance increase by decreasing thread count to 2 or 3.
+
+## Demos
+(Rendered at 500 samples per pixel and maximum depth of 50)
+![2702551944162722](https://github.com/user-attachments/assets/1ed8d316-9d30-4ce9-9dde-9c8fecdf50c8)
+![35633903981623816](https://github.com/user-attachments/assets/300d88aa-fd66-4d28-b89b-0046dde0452d)
+![6321357860854423](https://github.com/user-attachments/assets/0eb75c96-76ee-4b43-8adc-e7294201a02c)
+![9419044670518447](https://github.com/user-attachments/assets/1abba150-245b-4290-883f-dbf3e6c06671)
+![7559715668385661](https://github.com/user-attachments/assets/2d54ef4c-551b-4be9-a45a-6506f0882a25)
+
+## References
+"Ray tracing in one weekend" and "Ray tracing the next week" : https://raytracing.github.io/
