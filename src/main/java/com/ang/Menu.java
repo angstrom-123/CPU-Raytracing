@@ -17,8 +17,11 @@ public class Menu extends JFrame {
     private ConfigHandler   c;
     private JFrame          frame;
     private JButton         renderButton;
-    private JLabel          l1, l2, l3, l4, l5, l6, l7;
     private JLabel          sceneLabel;
+    private JCheckBox       doSave;
+    private JLabel          l1, l2, l3, l4, l5, l6, l7;
+    private JLabel          filePath, fileName;
+    private JTextField      t1, t2;
     private JSpinner        s1, s2, s3, s4, s5, s6, s7;
     
     private JLabel[]        labels;
@@ -82,6 +85,17 @@ public class Menu extends JFrame {
         l7 = new JLabel("Tile height (0=auto)");
         s7 = new JSpinner(new SpinnerNumberModel(0, 0, 2160, 10));
 
+        // do save?
+        doSave = new JCheckBox("Save file");
+
+        // file path
+        filePath = new JLabel("File path");
+        t1 = new JTextField(12);
+
+        // file name
+        fileName = new JLabel("File name");
+        t2 = new JTextField(12);
+
         // init arrays
         labels = new JLabel[]{l1, l2, l3, l4, l5, l6, l7};
         spinners = new JSpinner[]{s1, s2, s3, s4, s5, s6, s7};
@@ -106,8 +120,11 @@ public class Menu extends JFrame {
                 int threads = (Integer) s5.getValue();
                 int tileX   = (Integer) s6.getValue();
                 int tileY   = (Integer) s7.getValue();
+                String path = t1.getText();
+                String name = t2.getText();
 
                 c.setScene(scene);
+                c.configFile(path, name);
                 c.configCam(width, samples, bounces);
                 c.configThreads(threads, tileX, tileY);
                 c.callRender();
@@ -125,13 +142,27 @@ public class Menu extends JFrame {
         for (int i = 0; i < labels.length; i++) {
             labels[i].setFont(font);
             labels[i].setBounds(left, i * yOffset, lWidth, lHeight);
-
             spinners[i].setFont(font);
             spinners[i].setBounds(left, 15 + i * yOffset, sWidth, sHeight);
         }
 
+        filePath.setFont(font);
+        filePath.setBounds(10, 270, 140, 15);
+
+        fileName.setFont(font);
+        fileName.setBounds(10, 305, 140, 15);
+
+        doSave.setFont(font);
+        doSave.setBounds(10, 250, 140, 20);
+
+        t1.setFont(font);
+        t1.setBounds(10, 285, 140, 20);
+
+        t2.setFont(font);
+        t2.setBounds(10, 320, 140, 20);
+
         renderButton.setFont(font);
-        renderButton.setBounds(10, 250, 180, 20);
+        renderButton.setBounds(10, 355, 180, 20);
         
         sceneLabel.setFont(font);
         sceneLabel.setBounds(70, 15, 70, 20);
@@ -141,7 +172,7 @@ public class Menu extends JFrame {
         initElements();
         // add to frame
         frame = new JFrame("Config");
-        frame.getContentPane().setPreferredSize(new Dimension(200, 280));
+        frame.getContentPane().setPreferredSize(new Dimension(200, 400));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setLayout(null);
@@ -157,6 +188,11 @@ public class Menu extends JFrame {
             frame.add(spinners[i]);
         }
 
+        frame.add(filePath);
+        frame.add(fileName);
+        frame.add(t1);
+        frame.add(t2);
+        frame.add(doSave);
         frame.add(renderButton);
         frame.add(sceneLabel);
 

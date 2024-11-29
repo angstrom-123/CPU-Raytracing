@@ -100,7 +100,7 @@ public class Tri extends Hittable{
 
         // no colision
         if (!((determinant >= 1E-6) && (dst >= 0) 
-        && (u >= 0) && (v >= 0) && (w >= 0))) {
+                && (u >= 0) && (v >= 0) && (w >= 0))) {
             return false;
         }
 

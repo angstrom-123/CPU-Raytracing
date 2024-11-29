@@ -24,6 +24,8 @@ public class Master implements ThreadListener {
     private int                     usedTiles;
     private int                     threadCount;
     private int[][]                 tileSizes;
+    private String                  path;
+    private String                  fileName;
 
     public Master(Camera cam, HittableList world) {
         this.cam   = cam;
@@ -34,6 +36,11 @@ public class Master implements ThreadListener {
         this.cam        = cam;
         this.world      = world;
         this.renderDone = false;
+    }
+
+    public void setSavePath(String path, String fileName) {
+        this.path = path;
+        this.fileName = fileName;
     }
 
     public void setTileSize(int x, int y) {
@@ -61,7 +68,7 @@ public class Master implements ThreadListener {
             }
 
             if (activeThreads == 0) {
-                cam.saveFile(null);
+                cam.saveFile(path, fileName);
                 shutDown();
             }
         } else {
@@ -179,26 +186,27 @@ public class Master implements ThreadListener {
     // calculate dimensions of each tile based on ideal dimensions
     private void calculateTileSizes() {
         // calculates amount of full tiles along each axis and remainders
-        int xCount = (int)Math.floor(Global.imageWidth / tileX);
-        int remX = Global.imageWidth % tileX;
+        int xNum = (int)Math.floor(Global.imageWidth / tileX);
+        int xRem = (Global.imageWidth % tileX > 0) ? 1 : 0;
 
-        int yCount = (int)Math.floor(Global.imageHeight / tileY);
-        int remY = Global.imageHeight % tileY;
+        int yNum = (int)Math.floor(Global.imageHeight / tileY);
+        int yRem = (Global.imageHeight % tileY > 0) ? 1 : 0;
 
-        tileSizes = new int[(xCount * yCount) + remX + remY][4];
+        tileSizes = new int[(xNum + xRem) * (yNum + yRem)][4];
     
         // calculates start and end coords of each block
         int index = 0;
-        for (int x = 0; (remX == 0) ? (x < xCount) : (x <= xCount); x++) {
-            for (int y = 0; (remY == 0) ? (y < yCount) : (y <= yCount); y++) {
+        for (int x = 0; x < xNum + xRem; x++) {
+            for (int y = 0; y < yNum + yRem; y++) {
                 int startX = x * tileX;
                 int startY = y * tileY;
 
                 // remainders are added to the final tiles in each row / column
-                int endX = (x < xCount) ? (startX + tileX) : Global.imageWidth;
-                int endY = (y < yCount) ? (startY + tileY) : Global.imageHeight;
+                int endX = (x < xNum) ? (startX + tileX) : Global.imageWidth;
+                int endY = (y < yNum) ? (startY + tileY) : Global.imageHeight;
 
                 tileSizes[index] = new int[]{startX, endX, startY, endY};
+
                 index++;
             }
         }

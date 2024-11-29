@@ -37,6 +37,10 @@ public class ConfigHandler {
         }
     }
 
+    public void configFile(String path, String name) {
+        Global.master.setSavePath(path, name);
+    }
+
     public void configThreads(int threadNum, int tileX, int tileY) {
         if (Global.master.renderDone) {
             Global.master.setThreadCount(threadNum);
@@ -53,33 +57,31 @@ public class ConfigHandler {
     }
 
     public void setScene(int sceneNum) {
-        if (!Global.master.renderDone) {
-            return;
-        }
-
-        switch (sceneNum) {
-            case 1: // spheres
-                scene1();
-                break;
-            case 2: // knight
-                scene2();
-                break;
-            case 3: // globe
-                scene3();
-                break;
-            case 4: // emission
-                scene4();
-                break;
-            case 5: // cornell
-                scene5();
-                break;
-            default:
-                break;
+        if (Global.master.renderDone) {
+            switch (sceneNum) {
+                case 1: // spheres
+                    scene1();
+                    break;
+                case 2: // knight
+                    scene2();
+                    break;
+                case 3: // globe
+                    scene3();
+                    break;
+                case 4: // emission
+                    scene4();
+                    break;
+                case 5: // cornell
+                    scene5();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
     private void scene1() {
-        world = new HittableList(2000);
+        world = new HittableList(500);
 
         cam.aspectRatio     = 16.0 / 9.0;
 
@@ -134,7 +136,7 @@ public class ConfigHandler {
     }
 
     private void scene2() {
-        world = new HittableList(2000);
+        world = new HittableList(500);
 
         cam.aspectRatio     = 16.0 / 9.0;
 
@@ -206,7 +208,7 @@ public class ConfigHandler {
         cam.lookFrom        = new Vec3(0.0, 0.0, 10.0);
         cam.lookAt          = new Vec3(0.0, 0.0,  0.0);
         cam.vUp             = new Vec3(0.0, 1.0,  0.0);
-        cam.background      = new Vec3(0.7, 0.8, 1);
+        cam.background      = new Vec3(0.7, 0.8,  1.0);
 
         cam.defocusAngle    = 0.0;
 
@@ -227,6 +229,7 @@ public class ConfigHandler {
         cam.lookFrom        = new Vec3(1.0, 1.0, 3.0);
         cam.lookAt          = new Vec3(0.0, 1.0, 0.0);
         cam.vUp             = new Vec3(0.0, 1.0, 0.0);
+        cam.background      = new Vec3(0.0, 0.0, 0.0);
 
         cam.defocusAngle    = 0.0;
 
@@ -249,7 +252,7 @@ public class ConfigHandler {
     }
 
     private void scene5() {
-        world = new HittableList(2000);
+        world = new HittableList(500);
         
         cam.aspectRatio     = 1.0 / 1.0;
 
@@ -257,13 +260,14 @@ public class ConfigHandler {
         cam.lookFrom        = new Vec3(0.0, 3.0, 14.0);
         cam.lookAt          = new Vec3(0.0, 3.0,  0.0);
         cam.vUp             = new Vec3(0.0, 1.0,  0.0);
+        cam.background      = new Vec3(0.0, 0.0,  0.0);
 
         cam.defocusAngle    = 0.0;
 
         Material white  = new Lambertian(new Vec3(0.73, 0.73, 0.73));
         Material red    = new Lambertian(new Vec3(0.65, 0.05, 0.05));
         Material green  = new Lambertian(new Vec3(0.12, 0.45, 0.15));
-        Material light  = new Emissive(new Vec3(15.0, 13.0, 12.0));
+        Material light  = new Emissive(new Vec3(12.0, 10.5, 9.5));
         
         // walls
         world.add(new Quad(
@@ -319,10 +323,10 @@ public class ConfigHandler {
 
         // light
         world.add(new Quad(
-            new Vec3(-1.0, 6.0, -2.0), 
+            new Vec3(-1.0, 6.0, -4.0),
+            new Vec3( 1.0, 6.0, -4.0),  
             new Vec3( 1.0, 6.0, -2.0), 
-            new Vec3( 1.0, 6.0, -4.0), 
-            new Vec3(-1.0, 6.0, -4.0), 
+            new Vec3(-1.0, 6.0, -2.0), 
             light));
 
         world.add(new BVHNode(world));

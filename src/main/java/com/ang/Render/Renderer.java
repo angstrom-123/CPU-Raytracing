@@ -4,9 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
-import java.io.InvalidObjectException;
 
 import javax.swing.*;
 import javax.imageio.*;
@@ -107,18 +105,26 @@ public class Renderer extends JFrame{
         return 0;
     }
 
-    public void saveFile(String path) {
+    public void saveFile(String path, String name) {
         if (path == null) {
             path = "../renders/";
         }
 
-        String randomName = String.valueOf(Math.random()).substring(2);
+        String last = path.substring(path.length() - 1);
+        if (last != "/") {
+            path = path + "/";
+        }
+
+        if (name == null) {
+            name = String.valueOf(Math.random()).substring(2);
+        }
+
         try {
-            ImageIO.write(img, "png", new File(path + randomName + ".png"));
+            ImageIO.write(img, "png", new File(path + name + ".png"));
         } catch (IOException e) {
             try {
                 System.out.println("Couldn't find renders folder");
-                ImageIO.write(img, "png", new File(randomName + ".png"));
+                ImageIO.write(img, "png", new File(name + ".png"));
             } catch (IOException f) {
                 System.out.println("Exception in save file, could not save");
             }  

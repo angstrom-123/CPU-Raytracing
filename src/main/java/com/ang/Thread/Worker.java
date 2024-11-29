@@ -53,12 +53,12 @@ public class Worker implements Runnable{
                         // pixel collects colour of each surface the ray hits
                         Ray r = getRay(i, j);
                         pixelCol = pixelCol
-                                .add(rayColour(r, cam.maxBounces, world));
+                                   .add(rayColour(r, cam.maxBounces, world));
                     }
 
                     // sends normalized pixel colour to renderer to draw
                     Vec3 outCol = pixelCol
-                                .multiply(1d / (double)cam.samplesPerPixel);
+                                  .multiply(1d / (double)cam.samplesPerPixel);
                     cam.sendPixelToRenderer(outCol, i, j);
                 }
             }

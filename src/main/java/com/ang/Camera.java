@@ -47,7 +47,7 @@ public class Camera {
         double h = Math.tan(theta / 2.0);
         double viewportHeight = 2.0 * h  * focusDistance;
         double viewportWidth = viewportHeight 
-                             * ((double) imageWidth / (double) imageHeight);
+                               * ((double) imageWidth / (double) imageHeight);
        
         // calculate relative camera basis vectors
         w = (lookFrom.subtract(lookAt)).unitVector(); // opposite of view
@@ -64,17 +64,17 @@ public class Camera {
 
         // calculate location of top left pixel
         Vec3 viewportOffset = (w.multiply(focusDistance))
-                            .add(viewportU.divide(2.0))
-                            .add(viewportV.divide(2.0));
+                              .add(viewportU.divide(2.0))
+                              .add(viewportV.divide(2.0));
         Vec3 viewportTopLeft = centre
-                             .subtract(viewportOffset);
+                               .subtract(viewportOffset);
         pixel0Location = viewportTopLeft
-                       .add((pixelDeltaU.add(pixelDeltaV))
-                       .multiply(0.5));
+                         .add((pixelDeltaU.add(pixelDeltaV))
+                         .multiply(0.5));
     
         // calculate defocus disk basis vectors
         double defocusRadius = focusDistance 
-                             * Math.tan(Global.deg2rad(defocusAngle / 2.0));
+                               * Math.tan(Global.deg2rad(defocusAngle / 2.0));
         defocusDiskU = u.multiply(defocusRadius);
         defocusDiskV = v.multiply(defocusRadius);
     }
@@ -87,7 +87,7 @@ public class Camera {
         renderer.writePixel(unitCol, x, y);
     }
 
-    public void saveFile(String path) {
-        renderer.saveFile(path);
+    public void saveFile(String path, String name) {
+        renderer.saveFile(path, name);
     }
 }
