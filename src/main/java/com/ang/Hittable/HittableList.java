@@ -5,6 +5,9 @@ import com.ang.Util.HitRecord;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 
+/*
+ * Stores information about all objects in the scene and their bounding boxes
+ */
 public class HittableList {
     public Hittable[]   hittables;
 

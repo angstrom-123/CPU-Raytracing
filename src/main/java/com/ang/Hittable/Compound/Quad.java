@@ -9,7 +9,10 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
-// using counter clockwise winding order: see Tri.java
+/*
+ * Implemented as a HittableList of Tri primitives.
+ * Using counter clockwise winding order: see Tri.java.
+ */
 public class Quad extends Hittable {
     private HittableList tris;
 

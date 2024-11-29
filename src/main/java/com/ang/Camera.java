@@ -3,6 +3,10 @@ package com.ang;
 import com.ang.Render.Renderer;
 import com.ang.Util.Vec3;
 
+/*
+ * Camera holds all information about render, calculates additional info 
+ * required by the threads to raytrace the scene.
+ */
 public class Camera {
     public double       aspectRatio        = 1.0;
     public int          imageWidth         = 100;
@@ -43,26 +47,28 @@ public class Camera {
         centre = lookFrom;
 
         // camera 
-        double theta = Global.deg2rad(fov);
+        double theta = Global.degToRad(fov);
         double h = Math.tan(theta / 2.0);
         double viewportHeight = 2.0 * h  * focusDistance;
         double viewportWidth = viewportHeight 
                                * ((double) imageWidth / (double) imageHeight);
        
         // calculate relative camera basis vectors
-        w = (lookFrom.subtract(lookAt)).unitVector(); // opposite of view
-        u = Vec3.cross(vUp, w).unitVector(); // right of view
-        v = Vec3.cross(  w, u); // up of view
+        w = (lookFrom.subtract(lookAt)).unitVector();   // opposite of view
+        u = Vec3.cross(vUp, w).unitVector();            // right of view
+        v = Vec3.cross(  w, u);                         // up of view
 
         // vectors along viewport edges
         Vec3 viewportU = u.multiply(viewportWidth); 
         Vec3 viewportV = v.negative().multiply(viewportHeight);
 
-        // delta vectors between pixels, delta ray direction per pixel
+        // delta vectors between pixels 
         pixelDeltaU = viewportU.divide(imageWidth);
         pixelDeltaV = viewportV.divide(imageHeight);
 
-        // calculate location of top left pixel
+        /* calculate location of top left pixel, used as a basis for all other
+         * pixel locations
+        */
         Vec3 viewportOffset = (w.multiply(focusDistance))
                               .add(viewportU.divide(2.0))
                               .add(viewportV.divide(2.0));
@@ -72,9 +78,9 @@ public class Camera {
                          .add((pixelDeltaU.add(pixelDeltaV))
                          .multiply(0.5));
     
-        // calculate defocus disk basis vectors
+        // calculate defocus disk basis vectors for depth of field
         double defocusRadius = focusDistance 
-                               * Math.tan(Global.deg2rad(defocusAngle / 2.0));
+                               * Math.tan(Global.degToRad(defocusAngle / 2.0));
         defocusDiskU = u.multiply(defocusRadius);
         defocusDiskV = v.multiply(defocusRadius);
     }

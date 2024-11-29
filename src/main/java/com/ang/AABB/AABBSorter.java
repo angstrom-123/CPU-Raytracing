@@ -2,6 +2,10 @@ package com.ang.AABB;
 
 import com.ang.Hittable.Hittable;
 
+/*
+ * Uses bubble sort to sort bounding boxes of hittables by their lengths along
+ * a given axis.
+ */
 public class AABBSorter {
     public static Hittable[] sort(Hittable[] arr, int ax, int start, int end) {
         Hittable[] sortingArray = new Hittable[end - start];

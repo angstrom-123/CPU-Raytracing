@@ -9,6 +9,9 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
+/*
+ * Implemented as a HittableList of Tri primitives loaded from an obj file.
+ */
 public class Mesh extends Hittable {
     private HittableList tris;
 

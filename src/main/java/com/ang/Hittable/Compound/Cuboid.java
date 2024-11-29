@@ -8,10 +8,13 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
+/*
+ * Implemented as a HittableList of Quad compounds.
+ */
 public class Cuboid extends Hittable {
     private HittableList quads;
 
-    // defined in terms of bounding corners
+    // defined in terms of bounding corners for axis-aligned boxes
     public Cuboid(Vec3 a, Vec3 b, Material mat) {
         quads = new HittableList(6);
 
@@ -44,7 +47,10 @@ public class Cuboid extends Hittable {
         quads.add(new Quad(new Vec3(min.x(), min.y(), min.z()), dx, dy, mat));
         quads.add(new Quad(new Vec3(min.x(), min.y(), max.z()), dx, dy, mat)); 
     }
-
+    /* 
+     * Defined in terms of one vertex and relative vectors to other verticies.
+     * Can be used for cuboids in any orientation.
+     */
     public Cuboid(Vec3 a, Vec3 dx, Vec3 dy, Vec3 dz, Material mat) {
         quads = new HittableList(6);
 

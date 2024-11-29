@@ -5,6 +5,11 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
+/*
+ * Axis-aligned bounding box. Used for BVH optimisation. Using axis aligned as
+ * computing intersection can be done using the slab method which is extremely
+ * cheap and simple.
+ */
 public class AABB {
     public Interval x, y, z;
 
@@ -84,7 +89,7 @@ public class AABB {
         return 2; // z
     }
 
-    // ray slab intersection
+    // ray/slab intersection
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
         Vec3 rayOrigin = r.origin();
         Vec3 rayDir = r.direction();

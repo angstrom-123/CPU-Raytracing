@@ -14,6 +14,11 @@ import javax.imageio.*;
 import com.ang.Global;
 import com.ang.Util.Vec3;
 
+/*
+ * Renderer handles displaying and saving the raytracing result. Makes use of 
+ * java swing for displaying render in window. File format for saved images is
+ * png by default.
+ */
 public class Renderer extends JFrame{
     private JFrame          frame = new JFrame();
 
@@ -40,7 +45,6 @@ public class Renderer extends JFrame{
     }
 
     private void initWindow() {
-        // ensures correct dimensions
         imgPanel.setPreferredSize(new Dimension(width, height));
         frame.getContentPane().add(imgPanel);
         frame.pack();
@@ -48,7 +52,10 @@ public class Renderer extends JFrame{
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        // shuts down threads when window is closed
+        /* 
+         * if the window is closed, the thread master is instructed to terminate
+         * all current threads. The frame is then disposed of.
+         */
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 Global.terminateThreads();
@@ -60,7 +67,12 @@ public class Renderer extends JFrame{
         imgPanel.requestFocusInWindow();
     }
 
-    // unitColour is a 0-1 normalized vector in linear colour space
+    /*
+     * Writes an rgb colour value to the screen space coordinates (x, y). The 
+     * unitColour passed in should be a colour vector (containing rgb for xyz).
+     * unitColour should be normalized to the range (0,1) and be in linear 
+     * colour space.
+     */
     public void writePixel(Vec3 unitColour, int x, int y) {
         if (!initDone) {
             initWindow();
@@ -71,27 +83,30 @@ public class Renderer extends JFrame{
         double g = unitColour.y();
         double b = unitColour.z();
 
-        // gamma correction
-        r = linear2gamma(r);
-        g = linear2gamma(g);
-        b = linear2gamma(b);
+        r = linearToGamma(r);
+        g = linearToGamma(g);
+        b = linearToGamma(b);
 
-        // multiply to be in range 0-255 for output
         int rComponent = (int)Math.round(r * 255); 
         int gComponent = (int)Math.round(g * 255); 
         int bComponent = (int)Math.round(b * 255); 
 
-        // clamping values to 0-255
         rComponent = rComponent > 255 ? rComponent = 255 : rComponent;
         gComponent = gComponent > 255 ? gComponent = 255 : gComponent;
         bComponent = bComponent > 255 ? bComponent = 255 : bComponent;
 
-        // consolidating rgb values to single integer, 1 byte per component
-        // first byte is alpha, not set as this defaults to 255 (full opacity)
+        /*
+         * BufferedImage accepts pixel colour as a single integer storing all
+         * component colours. Each component is 2 bytes in the order alpha, red,
+         * green, blue. col is the rgb value in this representation.
+         */
         int col = (rComponent << 16) | (gComponent << 8) | bComponent;
         img.setRGB(x, y, col);
 
-        // redrawing only for visualization purposes, likely hurts performance
+        /*
+         * Redrawing the frame every time a pixel is drawn hurts the performance
+         * of the program. I opt to do this anyway for aesthetic purposes.
+         */
         frame.repaint();
     }
 
@@ -99,8 +114,7 @@ public class Renderer extends JFrame{
         frame.repaint();
     }
 
-    // gamma correction, square rooting component
-    private double linear2gamma(double linearComponent) {
+    private double linearToGamma(double linearComponent) {
         if (linearComponent > 0) {
             return Math.sqrt(linearComponent);
         }
@@ -108,8 +122,11 @@ public class Renderer extends JFrame{
     }
 
     public void saveFile(String path, String name) {
-        // searches through common locations for renders folder
-        // if it cannot be found, it is saved in cwd
+        /*
+         * If the path is undefined then the renders directory is searched for
+         * in common locaitons. If it is not found, the file will be saved in 
+         * the cwd.
+         */
         if ((path == null) || (path.length() < 1)) {
             String[] prefixes = new String[]{
                 "/",
@@ -122,7 +139,7 @@ public class Renderer extends JFrame{
             int i = 0;
             while (true) {
                 if (i >= prefixes.length) {
-                    path = ".";
+                    path = "."; // cwd
                     break;
                 }
                 String prefix = prefixes[i];
@@ -134,22 +151,18 @@ public class Renderer extends JFrame{
                 i++;
             }
         } else if (path.substring(path.length() - 1) != "/") {
-            path = path + "/";
+            path = path + "/"; // last character of path must be a /
         }
 
         if ((name == null) || (name.length() < 1)) {
-            name = String.valueOf(Math.random()).substring(2);
+            name = String.valueOf(Math.random()).substring(2); // random name
         }
 
         try {
             ImageIO.write(img, "png", new File(path + name + ".png"));
         } catch (IOException e) {
-            try {
-                System.out.println("Couldn't find renders folder");
-                ImageIO.write(img, "png", new File(name + ".png"));
-            } catch (IOException f) {
-                System.out.println("Exception in save file, could not save");
-            }  
-        }
+            System.out.println("Exception in save file");
+            e.printStackTrace();
+        }  
     }
 }

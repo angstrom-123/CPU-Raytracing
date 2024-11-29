@@ -9,6 +9,9 @@ import com.ang.Camera;
 import com.ang.Global;
 import com.ang.Hittable.HittableList;
 
+/*
+ * Master controls all threads, their workers, and their tasks.
+ */
 public class Master implements ThreadListener {
     public boolean                  renderDone = true;
     
@@ -55,8 +58,9 @@ public class Master implements ThreadListener {
         this.workers = new Worker[threadCount];
     }
 
-    // when thread sends notification that it is done, it is reassigned to a
-    // new block or parked.
+    /* when thread sends notification that it is done, it is reassigned to a
+     *new block or parked.
+     */
     @Override
     public void threadComplete(Worker w) {
         // if all tiles are done and all threads are parked, shuts down 
@@ -88,6 +92,11 @@ public class Master implements ThreadListener {
         }
     }
 
+    /*
+     * Forces all threads to halt execution immediately. This causes a runtime
+     * error with the executor service. This error is inconsequential and has no
+     * known effect on the functionality of the program.
+     */
     @Override
     public void forceStop() {
         renderDone      = true;
@@ -145,6 +154,10 @@ public class Master implements ThreadListener {
         System.out.println(((endTime- startTime) / 1000.0)+"s To render");
     }
 
+    /*
+     * Calculates size of tiles for each worker to render. Dispatches selected
+     * amount of threads to begin work on these tiles.
+     */
     public void render() {
         taskQueue = new LinkedBlockingQueue<>();
         executorService = Executors.newFixedThreadPool(threadCount);

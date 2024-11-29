@@ -7,6 +7,9 @@ import com.ang.Util.Ray;
 import com.ang.Util.RayTracker;
 import com.ang.Util.Vec3;
 
+/*
+ * Lambertian diffuse material
+ */
 public class Lambertian extends Material{
     private Texture tex;
 
@@ -22,8 +25,7 @@ public class Lambertian extends Material{
     public boolean scatter(Ray rIn, HitRecord rec, RayTracker rt) {
         Vec3 direction = rec.normal.add(Vec3.randomUnitVector());
         
-        // if scatter direction is opposite to normal, it becomes almost 0,0,0
-        // this case is caught and replaced by normal
+        // if scatter direction is opposite to normal it can underflow
         if (direction.nearZero()) {
             direction = rec.normal;
         }

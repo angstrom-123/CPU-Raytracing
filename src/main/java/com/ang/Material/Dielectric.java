@@ -5,6 +5,9 @@ import com.ang.Util.Ray;
 import com.ang.Util.RayTracker;
 import com.ang.Util.Vec3;
 
+/*
+ * Glass - like materials
+ */
 public class Dielectric extends Material{
     private double refractiveIndex;
     private Vec3 albedo;

@@ -4,6 +4,9 @@ import com.ang.Texture.SolidColour;
 import com.ang.Texture.Texture;
 import com.ang.Util.Vec3;
 
+/*
+ * Physical lights in the scene
+ */
 public class Emissive extends Material{
     private Texture tex;
 

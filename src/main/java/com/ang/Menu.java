@@ -5,12 +5,9 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-// thread count
-// horizontal resolution
-// scene selector
-// bounce limit
-// samples per pixel
-// tile x, tile y
+/*
+ * Uses java swing to display a simple menu for adjusting render settings.
+ */
 public class Menu extends JFrame {
     private Font font = new Font("dialog", Font.PLAIN, 11);
 
@@ -32,6 +29,7 @@ public class Menu extends JFrame {
     }
 
     private void initElements() {
+        // initializing elements to be placed on frame
         // scene selector
         sceneLabel = new JLabel("Random balls"); 
         l1 = new JLabel("Demo scene");  
@@ -61,46 +59,46 @@ public class Menu extends JFrame {
             }
         });
 
-        // samples per pixel
+        // per-pixel sample count
         l2 = new JLabel("Samples per pixel");
         s2 = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 10));
 
-        // bounce limit
+        // maximum ray bounce limit
         l3 = new JLabel("Max ray bounces");
         s3 = new JSpinner(new SpinnerNumberModel(20, 1, 500, 5));
 
-        // image width
+        // width of output image
         l4 = new JLabel("Horizontal resolution");
         s4 = new JSpinner(new SpinnerNumberModel(426, 1, 3840, 100));
 
-        // thread count
+        // number of threads for the master to dispatch at once
         l5 = new JLabel("Number of threads");
         s5 = new JSpinner(new SpinnerNumberModel(3, 1, 50, 1));
 
-        // tile width
+        // width and height of tiles for the threads to work on, 0 is auto
         l6 = new JLabel("Tile width (0=auto)");
         s6 = new JSpinner(new SpinnerNumberModel(0, 0, 3840, 10));
 
-        // tile height
         l7 = new JLabel("Tile height (0=auto)");
         s7 = new JSpinner(new SpinnerNumberModel(0, 0, 2160, 10));
 
-        // do save?
+        // checkbox to save file
         doSave = new JCheckBox("Save file", true);
 
-        // file path
+        // input fields for file path and file name
         filePath = new JLabel("File path");
         t1 = new JTextField(12);
 
-        // file name
         fileName = new JLabel("File name");
         t2 = new JTextField(12);
 
-        // init arrays
         labels = new JLabel[]{l1, l2, l3, l4, l5, l6, l7};
         spinners = new JSpinner[]{s1, s2, s3, s4, s5, s6, s7};
 
-        // render button
+        /* Initializing render button. When pressed, all settings are saved and
+         * applied to the camera, renderer, and master using ConfigHandler c.
+         * The thread master is instructed to begin rendering the image.
+         */
         renderButton = new JButton("Render");
         renderButton.addActionListener(new ActionListener() {
             @Override
@@ -132,7 +130,7 @@ public class Menu extends JFrame {
             }
         });
 
-        // positioning
+        // positioning GUI, applying font
         int left    = 10;
         int yOffset = 35;
         int lWidth  = 140;
@@ -171,7 +169,7 @@ public class Menu extends JFrame {
 
     public void showMenu() {
         initElements();
-        // add to frame
+
         frame = new JFrame("Config");
         frame.getContentPane().setPreferredSize(new Dimension(200, 400));
         frame.pack();

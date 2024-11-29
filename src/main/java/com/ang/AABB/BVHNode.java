@@ -6,6 +6,11 @@ import com.ang.Util.HitRecord;
 import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 
+/*
+ * Node in binary tree used in BVH optimisation. Each node on the tree is an
+ * axis-aligned bounding box in the HittableList describing the world. The nodes
+ * are arranged in order of size along their longest axes.
+ */
 public class BVHNode extends Hittable{
     private Hittable    left;
     private Hittable    right;

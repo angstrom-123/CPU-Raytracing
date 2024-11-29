@@ -8,17 +8,18 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
-// using counter clockwise winding order for outward normals
-// verticies must be defined counter clockwise to ensure correct normal vector
-
-// examples of correct winding:
-//  2         1
-//  |\        |\
-//  | \       | \
-//  |  \      |  \
-//  +---+     +---+
-// 0     1   2     0
-
+/*
+ * using counter clockwise winding order for outward normals
+ * verticies must be defined counter clockwise to ensure correct normal vector
+ *
+ * examples of correct winding:
+ *  2         1
+ *  |\        |\
+ *  | \       | \
+ *  |  \      |  \
+ *  +---+     +---+
+ * 0     1   2     0
+ */
 public class Tri extends Hittable{
     private Vec3        a;
     private Vec3        ab, ac;

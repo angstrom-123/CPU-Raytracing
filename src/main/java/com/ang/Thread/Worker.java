@@ -9,6 +9,11 @@ import com.ang.Util.Vec3;
 import com.ang.Camera;
 import com.ang.Global;
 
+/*
+ * Workers are dispatched by the master and are used to raytrace. Each worker 
+ * raytraces an individual part of the whole image and its results are 
+ * consolidated in the Renderer's BufferedImage.
+ */
 public class Worker implements Runnable{
     private ThreadListener  listener;
     private int             startRow;
@@ -19,6 +24,10 @@ public class Worker implements Runnable{
     private Camera          cam;
     private boolean         exit;
 
+    /*
+     * Workers are dispatched to calculate pixel colours between 2 sets of 
+     * coordinates. The area in which a worker is functioning is a "tile".
+     */
     public Worker(int startCol, int endCol, int startRow, int endRow){        
         this.startRow   = startRow;
         this.endRow     = endRow;
@@ -40,7 +49,6 @@ public class Worker implements Runnable{
         exit = true;
     }
 
-    // ray tracing logic
     @Override
     public void run() {
         // loops over active rows, calculates output colour for each pixel
@@ -68,7 +76,11 @@ public class Worker implements Runnable{
         listener.threadComplete(this);
     }
 
-    // generates jittered rays for a given pixel
+    /*
+     * Generates rays with minutely jittered directions for a given pixel. This 
+     * allows for sub-pixel sampling which simulates continuity. This acts as
+     * anti-aliasing.
+     */
     private Ray getRay(int x, int y) {
         Vec3 offset = sampleSquare();
 
@@ -88,7 +100,7 @@ public class Worker implements Runnable{
 
     // generates random offsets to use for same-pixel sampling
     private Vec3 sampleSquare() {
-        // random vector in -.5, -.5 to .5,.5 unit square
+        // random vector in (-0.5, -0.5) to (0.5, 0.5) unit square
         return new Vec3(Math.random() - 0.5, Math.random() - 0.5, 0.0);
     }
 

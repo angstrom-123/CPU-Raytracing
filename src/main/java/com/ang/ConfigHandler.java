@@ -19,13 +19,17 @@ import com.ang.Util.Interval;
 import com.ang.Util.OBJImporter;
 import com.ang.Util.Vec3;
 
+/*
+ * Accessed by Menu.java to apply settings to camera, renderer, and thread 
+ * master. Also allows for initialization of demo scenes
+ */
 public class ConfigHandler {
     private Camera cam;
     private HittableList world;
 
     public ConfigHandler() {
         cam = new Camera();
-        world = new HittableList(2000);
+        // world = new HittableList(2000);
         Global.master = new Master(cam, world);
     }
 
@@ -80,6 +84,10 @@ public class ConfigHandler {
         }
     }
 
+    /*
+     * 3 balls in focus (one diffuse, one glass, one metallic) surrounded by
+     * smaller randomly placed and coloured balls on a gray ground. 
+     */
     private void scene1() {
         world = new HittableList(500);
 
@@ -135,6 +143,11 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
+    /*
+     * Model of chess knight in glass beside a large reflective sphere, 
+     * surrounded by smaller, randomly placed and coloured balls on a checkered
+     * ground.
+     */
     private void scene2() {
         world = new HittableList(500);
 
@@ -199,6 +212,9 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
+    /*
+     * Sphere with a texture applies to look like the Earth on a sku backdrop.
+     */
     private void scene3() {
         world = new HittableList(100);
 
@@ -220,6 +236,10 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
+    /* 
+     * Glass chess knight on checkered ground with emmissive sphere behind 
+     * it as the only light source. 
+     */
     private void scene4() {
         world = new HittableList(2000);
         
@@ -251,6 +271,11 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
+    /*
+     * Cornell box. Cube shaped room with white, green, and red walls containing
+     * 2 boxes of different heights and orientations illuminated by a single 
+     * rectangular light at the top.
+     */
     private void scene5() {
         world = new HittableList(500);
         
