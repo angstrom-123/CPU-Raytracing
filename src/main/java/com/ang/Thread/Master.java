@@ -61,7 +61,7 @@ public class Master implements ThreadListener {
             }
 
             if (activeThreads == 0) {
-                cam.saveFile("");
+                cam.saveFile(null);
                 shutDown();
             }
         } else {
