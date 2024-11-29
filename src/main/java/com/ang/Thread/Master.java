@@ -24,6 +24,7 @@ public class Master implements ThreadListener {
     private int                     usedTiles;
     private int                     threadCount;
     private int[][]                 tileSizes;
+    private boolean                 save;
     private String                  path;
     private String                  fileName;
 
@@ -38,9 +39,10 @@ public class Master implements ThreadListener {
         this.renderDone = false;
     }
 
-    public void setSavePath(String path, String fileName) {
+    public void setSavePath(String path, String fileName, boolean save) {
         this.path = path;
         this.fileName = fileName;
+        this.save = save;
     }
 
     public void setTileSize(int x, int y) {
@@ -68,7 +70,9 @@ public class Master implements ThreadListener {
             }
 
             if (activeThreads == 0) {
-                cam.saveFile(path, fileName);
+                if (save) {
+                    cam.saveFile(path, fileName);
+                }
                 shutDown();
             }
         } else {

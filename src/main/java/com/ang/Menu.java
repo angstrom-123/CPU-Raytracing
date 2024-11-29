@@ -86,7 +86,7 @@ public class Menu extends JFrame {
         s7 = new JSpinner(new SpinnerNumberModel(0, 0, 2160, 10));
 
         // do save?
-        doSave = new JCheckBox("Save file");
+        doSave = new JCheckBox("Save file", true);
 
         // file path
         filePath = new JLabel("File path");
@@ -113,18 +113,19 @@ public class Menu extends JFrame {
                     e.printStackTrace();
                 }
 
-                int scene   = (Integer) s1.getValue();
-                int samples = (Integer) s2.getValue();
-                int bounces = (Integer) s3.getValue();
-                int width   = (Integer) s4.getValue();
-                int threads = (Integer) s5.getValue();
-                int tileX   = (Integer) s6.getValue();
-                int tileY   = (Integer) s7.getValue();
-                String path = t1.getText();
-                String name = t2.getText();
+                int scene       = (Integer) s1.getValue();
+                int samples     = (Integer) s2.getValue();
+                int bounces     = (Integer) s3.getValue();
+                int width       = (Integer) s4.getValue();
+                int threads     = (Integer) s5.getValue();
+                int tileX       = (Integer) s6.getValue();
+                int tileY       = (Integer) s7.getValue();
+                boolean save    = doSave.isSelected();
+                String path     = t1.getText();
+                String name     = t2.getText();
 
                 c.setScene(scene);
-                c.configFile(path, name);
+                c.configFile(path, name, save);
                 c.configCam(width, samples, bounces);
                 c.configThreads(threads, tileX, tileY);
                 c.callRender();

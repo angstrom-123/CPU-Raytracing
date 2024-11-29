@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.*;
 import javax.imageio.*;
@@ -106,16 +108,36 @@ public class Renderer extends JFrame{
     }
 
     public void saveFile(String path, String name) {
-        if (path == null) {
-            path = "../renders/";
-        }
+        // searches through common locations for renders folder
+        // if it cannot be found, it is saved in cwd
+        if ((path == null) || (path.length() < 1)) {
+            String[] prefixes = new String[]{
+                "/",
+                "./",
+                "../",
+                "../../",
+                "/src/"
+            };
 
-        String last = path.substring(path.length() - 1);
-        if (last != "/") {
+            int i = 0;
+            while (true) {
+                if (i >= prefixes.length) {
+                    path = ".";
+                    break;
+                }
+                String prefix = prefixes[i];
+                if (Files.isDirectory(Paths.get(prefix + "renders"))) {
+                    path = prefix + "renders/";
+                    break;
+                }
+
+                i++;
+            }
+        } else if (path.substring(path.length() - 1) != "/") {
             path = path + "/";
         }
 
-        if (name == null) {
+        if ((name == null) || (name.length() < 1)) {
             name = String.valueOf(Math.random()).substring(2);
         }
 

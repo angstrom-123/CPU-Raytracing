@@ -37,8 +37,8 @@ public class ConfigHandler {
         }
     }
 
-    public void configFile(String path, String name) {
-        Global.master.setSavePath(path, name);
+    public void configFile(String path, String name, boolean save) {
+        Global.master.setSavePath(path, name, save);
     }
 
     public void configThreads(int threadNum, int tileX, int tileY) {
