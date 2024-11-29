@@ -6,8 +6,9 @@ import javax.imageio.ImageIO;
 
 // allows for loading and sampling of images
 public class ImageHandler {
-    private BufferedImage image;
-    private int           width, height;
+    private BufferedImage   image;
+    private int             width;
+    private int             height;
 
     // attempts to load an image
     public boolean loadImage(String path) {

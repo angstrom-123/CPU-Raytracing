@@ -6,12 +6,12 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 
 public class HittableList {
-    public Hittable[] hittables;
+    public Hittable[]   hittables;
 
-    private AABB      bBox       = new AABB();
-    private int       arrayIndex = 0;
+    private AABB        bBox        = new AABB();
+    private int         arrayIndex  = 0;
 
-    private int       maxHittables;
+    private int         maxHittables;
 
     public HittableList(int maxHittables) {
         this.maxHittables = maxHittables;

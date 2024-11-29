@@ -20,12 +20,12 @@ import com.ang.Util.Vec3;
 // 0     1   2     0
 
 public class Tri extends Hittable{
-    private Vec3     a;
-    private Vec3     ab, ac;
-    private Vec3     na, nb, nc;
-    private Vec3     normal; 
-    private AABB     bBox;
-    private Material mat;
+    private Vec3        a;
+    private Vec3        ab, ac;
+    private Vec3        na, nb, nc;
+    private Vec3        normal; 
+    private AABB        bBox;
+    private Material    mat;
 
     // auto compute normals
     public Tri(Vec3 a, Vec3 b, Vec3 c, Material mat) {
@@ -59,13 +59,14 @@ public class Tri extends Hittable{
         double maxX, maxY, maxZ;
         
         // expand each component to account for infinitely thin edge
-        minX = Math.min(Math.min(a.x(), b.x()), c.x()) - 0.1;
-        minY = Math.min(Math.min(a.y(), b.y()), c.y()) - 0.1;
-        minZ = Math.min(Math.min(a.z(), b.z()), c.z()) - 0.1;
+        double expand = 1E-8;
+        minX = Math.min(Math.min(a.x(), b.x()), c.x()) - expand;
+        minY = Math.min(Math.min(a.y(), b.y()), c.y()) - expand;
+        minZ = Math.min(Math.min(a.z(), b.z()), c.z()) - expand;
 
-        maxX = Math.max(Math.max(a.x(), b.x()), c.x()) + 0.1;
-        maxY = Math.max(Math.max(a.y(), b.y()), c.y()) + 0.1;
-        maxZ = Math.max(Math.max(a.z(), b.z()), c.z()) + 0.1;
+        maxX = Math.max(Math.max(a.x(), b.x()), c.x()) + expand;
+        maxY = Math.max(Math.max(a.y(), b.y()), c.y()) + expand;
+        maxZ = Math.max(Math.max(a.z(), b.z()), c.z()) + expand;
 
         Vec3 min = new Vec3(minX, minY, minZ);
         Vec3 max = new Vec3(maxX, maxY, maxZ);

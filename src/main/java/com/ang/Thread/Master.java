@@ -10,14 +10,15 @@ import com.ang.Global;
 import com.ang.Hittable.HittableList;
 
 public class Master implements ThreadListener {
-    public boolean                 renderDone = true;
-
+    public boolean                  renderDone = true;
+    
     private int                     activeThreads = 0;
 
     private BlockingQueue<Runnable> taskQueue;
     private ExecutorService         executorService;
     private Camera                  cam;
     private HittableList            world;
+    private Worker[]                workers;
     private double                  startTime;
     private int                     tileX, tileY;
     private int                     usedTiles;
@@ -30,8 +31,8 @@ public class Master implements ThreadListener {
     }
 
     public void set(Camera cam, HittableList world) {
-        this.cam = cam;
-        this.world = world;
+        this.cam        = cam;
+        this.world      = world;
         this.renderDone = false;
     }
 
@@ -42,16 +43,25 @@ public class Master implements ThreadListener {
 
     public void setThreadCount(int threadCount) {
         this.threadCount = threadCount;
+        this.workers = new Worker[threadCount];
     }
 
     // when thread sends notification that it is done, it is reassigned to a
     // new block or parked.
     @Override
-    public void threadComplete() {
+    public void threadComplete(Worker w) {
         // if all tiles are done and all threads are parked, shuts down 
         if (usedTiles == tileSizes.length) {
             activeThreads--;
+
+            // removes worker from workers array
+            int index = findWorker(w);
+            if (index < threadCount) {
+                workers[index] = null;
+            }
+
             if (activeThreads == 0) {
+                cam.saveFile("");
                 shutDown();
             }
         } else {
@@ -69,18 +79,54 @@ public class Master implements ThreadListener {
 
     @Override
     public void forceStop() {
-        renderDone = true;
-        executorService.shutdown();
+        renderDone      = true;
+        usedTiles       = 0;
+        activeThreads   = 0;
+
+        for (Worker w : workers) {
+            if (w != null) {
+                w.doStop();
+                w = null;
+            }
+        }
+
+        taskQueue.clear();
+        executorService.shutdownNow();
     }
 
-    public void addTask(Runnable task) {
+    // add and track new worker
+    private void addTask(Runnable task) {
         taskQueue.offer(task);
         executorService.execute(task);
+       
+        int index = findEmptyWorkerSlot();
+        if (index < threadCount) {
+            workers[index] = (Worker) task;
+        }
+    }
+    
+    // searches for particular worker in array
+    private int findWorker(Worker w) {
+        for (int i = 0; i < workers.length; i++) {
+            if (workers[i] == w) {
+                return i;
+            }
+        }
+
+        return threadCount;
     }
 
-    public void shutDown() {
-        cam.saveFile("");
-        
+    // searches for empty slot to put new worker in array
+    private int findEmptyWorkerSlot() {
+        for (int i = 0; i < workers.length; i++) {
+            if (workers[i] == null) {
+                return i;
+            }
+        }
+        return threadCount;
+    }
+
+    private void shutDown() {        
         renderDone = true;
         executorService.shutdown();
 

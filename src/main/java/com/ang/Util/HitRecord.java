@@ -28,12 +28,12 @@ public class HitRecord {
     }
 
     public void set(HitRecord rec) {
-        p         = rec.p;
-        normal    = rec.normal;
-        mat       = rec.mat;
-        u         = rec.u;
-        v         = rec.v;
-        t         = rec.t;
-        frontFace = rec.frontFace;
+        p           = rec.p;
+        normal      = rec.normal;
+        mat         = rec.mat;
+        u           = rec.u;
+        v           = rec.v;
+        t           = rec.t;
+        frontFace   = rec.frontFace;
     }
 }

@@ -3,7 +3,7 @@ package com.ang.Util;
 // holds information about ray colour and next bounce direction
 public class RayTracker {
     public Vec3 attenuation;
-    public Ray  scattered;
+    public Ray scattered;
 
     public RayTracker() {
         this.attenuation = new Vec3(0.0, 0.0, 0.0);

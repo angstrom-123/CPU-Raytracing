@@ -6,12 +6,12 @@ import com.ang.Util.RayTracker;
 import com.ang.Util.Vec3;
 
 public class Metal extends Material {
-    private Vec3   albedo;
+    private Vec3 albedo;
     private double fuzziness;
 
     public Metal(Vec3 albedo, double fuzziness) {
-        this.albedo    = albedo;
-        this.fuzziness = fuzziness;
+        this.albedo     = albedo;
+        this.fuzziness  = fuzziness;
     }
 
     @Override

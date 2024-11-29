@@ -4,26 +4,28 @@ import com.ang.Render.Renderer;
 import com.ang.Util.Vec3;
 
 public class Camera {
-    public double    aspectRatio     = 1.0;
-    public int       imageWidth      = 100;
-    public int       samplesPerPixel =  10;
-    public int       maxBounces      =  10;
-    public Vec3      background      = new Vec3(0.0, 0.0, 0.0);
-    public double    fov             = 90;
-    public Vec3      lookFrom        = new Vec3(0.0, 0.0,  0.0);
-    public Vec3      lookAt          = new Vec3(0.0, 0.0, -1.0);
-    public Vec3      vUp             = new Vec3(0.0, 1.0,  0.0);
-    public double    focusDistance   = 10.0;
-    public double    defocusAngle    =  0.0;
+    public double       aspectRatio        = 1.0;
+    public int          imageWidth         = 100;
+    public int          samplesPerPixel    =  10;
+    public int          maxBounces         =  10;
+    public Vec3         background         = new Vec3(0.0, 0.0, 0.0);
+    public double       fov                = 90;
+    public Vec3         lookFrom           = new Vec3(0.0, 0.0,  0.0);
+    public Vec3         lookAt             = new Vec3(0.0, 0.0, -1.0);
+    public Vec3         vUp                = new Vec3(0.0, 1.0,  0.0);
+    public double       focusDistance      = 10.0;
+    public double       defocusAngle       =  0.0;
 
-    public Vec3      centre;
-    public Vec3      pixel0Location;
-    public Vec3      pixelDeltaU, pixelDeltaV;
-    public Vec3      defocusDiskU, defocusDiskV;
+    public Vec3         centre;
+    public Vec3         pixel0Location;
+    public Vec3         pixelDeltaU;
+    public Vec3         pixelDeltaV;
+    public Vec3         defocusDiskU;
+    public Vec3         defocusDiskV;
 
-    private int      imageHeight;
-    private Vec3     u, v, w;
-    private Renderer renderer;
+    private int         imageHeight;
+    private Vec3        u, v, w;
+    private Renderer    renderer;
 
 
     public void init() {

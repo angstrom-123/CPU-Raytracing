@@ -12,20 +12,20 @@ import com.ang.Global;
 import com.ang.Util.Vec3;
 
 public class Renderer extends JFrame{
-    private JFrame        frame = new JFrame();
+    private JFrame          frame = new JFrame();
 
-    private BufferedImage img ;
-    private ImagePanel    imgPanel;
-    private int           width;
-    private int           height;
-    private boolean       initDone;
+    private BufferedImage   img ;
+    private ImagePanel      imgPanel;
+    private int             width;
+    private int             height;
+    private boolean         initDone;
 
     public Renderer(int w, int h) {
-        width    = w;
-        height   = h;
-        img      = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        imgPanel = new ImagePanel(img);
-        initDone = false;
+        width       = w;
+        height      = h;
+        img         = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        imgPanel    = new ImagePanel(img);
+        initDone    = false;
     }
 
     public int getImageWidth() {
@@ -55,10 +55,6 @@ public class Renderer extends JFrame{
 
         imgPanel.setFocusable(true);
         imgPanel.requestFocusInWindow();
-    }
-
-    public void clear() {
-        frame.dispose();
     }
 
     // unitColour is a 0-1 normalized vector in linear colour space

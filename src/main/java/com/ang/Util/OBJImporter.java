@@ -70,10 +70,10 @@ public class OBJImporter {
         }
 
         // initializes arrays with calculated data lengths
-        vertexData    = new Vec3[vLineCount];
-        normalData    = new Vec3[vnLineCount];
-        vertexIndices = new int[fLineCount][3];
-        normalIndices = new int[fLineCount][3];
+        vertexData      = new Vec3[vLineCount];
+        normalData      = new Vec3[vnLineCount];
+        vertexIndices   = new int[fLineCount][3];
+        normalIndices   = new int[fLineCount][3];
 
         s = this.getClass().getResourceAsStream(path);
         reader = new BufferedReader(new InputStreamReader(s));

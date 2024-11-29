@@ -5,9 +5,9 @@ import com.ang.Util.Interval;
 import com.ang.Util.Vec3;
 
 public class ImageTexture extends Texture {
-    private ImageHandler image = new ImageHandler();
+    private ImageHandler    image = new ImageHandler();
 
-    private boolean      noData;
+    private boolean         noData;
 
     // attempts to load image texture from specified path
     public ImageTexture(String path) {

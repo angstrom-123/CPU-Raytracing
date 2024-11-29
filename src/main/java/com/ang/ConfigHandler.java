@@ -79,17 +79,18 @@ public class ConfigHandler {
     }
 
     private void scene1() {
-        cam.aspectRatio = 16.0 / 9.0;
+        world = new HittableList(2000);
 
-        cam.fov      = 20.0;
-        cam.lookFrom = new Vec3(13.0, 2.0, 3.0);
-        cam.lookAt   = new Vec3( 0.0, 0.0, 0.0);
-        cam.vUp      = new Vec3( 0.0, 1.0, 0.0);
+        cam.aspectRatio     = 16.0 / 9.0;
 
-        cam.background = new Vec3(0.7, 0.8, 1.0);
+        cam.fov             = 20.0;
+        cam.lookFrom        = new Vec3(13.0, 2.0, 3.0);
+        cam.lookAt          = new Vec3( 0.0, 0.0, 0.0);
+        cam.vUp             = new Vec3( 0.0, 1.0, 0.0);
+        cam.background      = new Vec3( 0.7, 0.8, 1.0);
 
-        cam.defocusAngle  =  0.6;
-        cam.focusDistance = 10.0;
+        cam.defocusAngle    =  0.6;
+        cam.focusDistance   = 10.0;
 
         // random spheres
         for (int a = -11; a < 11; a++) {
@@ -135,17 +136,16 @@ public class ConfigHandler {
     private void scene2() {
         world = new HittableList(2000);
 
-        cam.aspectRatio = 16.0 / 9.0;
+        cam.aspectRatio     = 16.0 / 9.0;
 
-        cam.fov      = 50.0;
-        cam.lookFrom = new Vec3(1.0, 1.0, 3.0);
-        cam.lookAt   = new Vec3(0.0, 1.0, 0.0);
-        cam.vUp      = new Vec3(0.0, 1.0, 0.0);
+        cam.fov             = 50.0;
+        cam.lookFrom        = new Vec3(1.0, 1.0, 3.0);
+        cam.lookAt          = new Vec3(0.0, 1.0, 0.0);
+        cam.vUp             = new Vec3(0.0, 1.0, 0.0);
+        cam.background      = new Vec3(0.7, 0.8, 1.0);
 
-        cam.background = new Vec3(0.7, 0.8, 1.0);
-
-        cam.defocusAngle  = 1.0;
-        cam.focusDistance = 3.0;
+        cam.defocusAngle    = 1.0;
+        cam.focusDistance   = 3.0;
 
         // random spheres excluding centre
         Interval inter = new Interval(-1.0, 1.0);
@@ -200,16 +200,15 @@ public class ConfigHandler {
     private void scene3() {
         world = new HittableList(100);
 
-        cam.aspectRatio = 16.0 / 9.0;
+        cam.aspectRatio     = 16.0 / 9.0;
 
-        cam.fov      = 50.0;
-        cam.lookFrom = new Vec3(0.0, 0.0, 10.0);
-        cam.lookAt   = new Vec3(0.0, 0.0,  0.0);
-        cam.vUp      = new Vec3(0.0, 1.0,  0.0);
+        cam.fov             = 50.0;
+        cam.lookFrom        = new Vec3(0.0, 0.0, 10.0);
+        cam.lookAt          = new Vec3(0.0, 0.0,  0.0);
+        cam.vUp             = new Vec3(0.0, 1.0,  0.0);
+        cam.background      = new Vec3(0.7, 0.8, 1);
 
-        cam.background = new Vec3(0.7, 0.8, 1);
-
-        cam.defocusAngle = 0.0;
+        cam.defocusAngle    = 0.0;
 
         Texture earthTexture = new ImageTexture("/textures/earth_map.jpg");
         Material earthSurface = new Lambertian(earthTexture);
@@ -222,14 +221,14 @@ public class ConfigHandler {
     private void scene4() {
         world = new HittableList(2000);
         
-        cam.aspectRatio = 16.0 / 9.0;
+        cam.aspectRatio     = 16.0 / 9.0;
 
-        cam.fov      = 50.0;
-        cam.lookFrom = new Vec3(1.0, 1.0, 3.0);
-        cam.lookAt   = new Vec3(0.0, 1.0, 0.0);
-        cam.vUp      = new Vec3(0.0, 1.0, 0.0);
+        cam.fov             = 50.0;
+        cam.lookFrom        = new Vec3(1.0, 1.0, 3.0);
+        cam.lookAt          = new Vec3(0.0, 1.0, 0.0);
+        cam.vUp             = new Vec3(0.0, 1.0, 0.0);
 
-        cam.defocusAngle = 0.0;
+        cam.defocusAngle    = 0.0;
 
         Vec3 col1 = new Vec3(0.2, 0.3, 0.1);
         Vec3 col2 = new Vec3(0.9, 0.9, 0.9);
@@ -252,20 +251,19 @@ public class ConfigHandler {
     private void scene5() {
         world = new HittableList(2000);
         
-        cam.aspectRatio = 1.0 / 1.0;
+        cam.aspectRatio     = 1.0 / 1.0;
 
-        cam.fov      = 25.0;
-        cam.lookFrom = new Vec3(0.0, 3.0, 14.0);
-        cam.lookAt   = new Vec3(0.0, 3.0,  0.0);
-        cam.vUp      = new Vec3(0.0, 1.0,  0.0);
+        cam.fov             = 25.0;
+        cam.lookFrom        = new Vec3(0.0, 3.0, 14.0);
+        cam.lookAt          = new Vec3(0.0, 3.0,  0.0);
+        cam.vUp             = new Vec3(0.0, 1.0,  0.0);
 
-        cam.defocusAngle = 0.0;
+        cam.defocusAngle    = 0.0;
 
-        Material white = new Lambertian(new Vec3(0.73, 0.73, 0.73));
-        Material red   = new Lambertian(new Vec3(0.65, 0.05, 0.05));
-        Material green = new Lambertian(new Vec3(0.12, 0.45, 0.15));
-
-        Material light = new Emissive(new Vec3(15.0, 13.0, 12.0));
+        Material white  = new Lambertian(new Vec3(0.73, 0.73, 0.73));
+        Material red    = new Lambertian(new Vec3(0.65, 0.05, 0.05));
+        Material green  = new Lambertian(new Vec3(0.12, 0.45, 0.15));
+        Material light  = new Emissive(new Vec3(15.0, 13.0, 12.0));
         
         // walls
         world.add(new Quad(
@@ -326,5 +324,7 @@ public class ConfigHandler {
             new Vec3( 1.0, 6.0, -4.0), 
             new Vec3(-1.0, 6.0, -4.0), 
             light));
+
+        world.add(new BVHNode(world));
     }
 }

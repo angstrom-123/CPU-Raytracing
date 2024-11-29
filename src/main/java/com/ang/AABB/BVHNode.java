@@ -7,9 +7,9 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 
 public class BVHNode extends Hittable{
-    private Hittable left;
-    private Hittable right;
-    private AABB     bBox;
+    private Hittable    left;
+    private Hittable    right;
+    private AABB        bBox;
 
     // auto defines list size and start index
     public BVHNode(HittableList list) {
@@ -33,13 +33,11 @@ public class BVHNode extends Hittable{
             case 1:
                 // one node remains
                 left = right = objects[start];
-
                 break;
             case 2:
                 // 2 nodes remain
                 left  = objects[start];
                 right = objects[start + 1];
-
                 break;
             default:
                 // set left, right, and recurse down children
@@ -48,7 +46,6 @@ public class BVHNode extends Hittable{
                 int mid = start + span / 2;
                 left  = new BVHNode(objects, start, mid);
                 right = new BVHNode(objects,   mid, end);
-
                 break;
         }
 
@@ -69,7 +66,7 @@ public class BVHNode extends Hittable{
         if (hitLeft) {
             hitRight = right.hit(r, new Interval(tInterval.min, rec.t), rec);
         }
-        
+
         hitRight = right.hit(r, tInterval, rec);
 
         return hitLeft || hitRight;

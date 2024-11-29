@@ -10,10 +10,10 @@ import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
 public class Sphere extends Hittable {
-    private Vec3     centre;
-    private Material mat;
-    private AABB     bBox;
-    private double   radius;
+    private Vec3        centre;
+    private Material    mat;
+    private AABB        bBox;
+    private double      radius;
 
     // define in terms of centre and radius
     public Sphere(Vec3 centre, double radius, Material mat) {

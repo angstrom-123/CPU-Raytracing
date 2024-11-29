@@ -10,28 +10,34 @@ import com.ang.Camera;
 import com.ang.Global;
 
 public class Worker implements Runnable{
-    private ThreadListener listener;
-    private int            startRow;
-    private int            endRow;
-    private int            startCol;
-    private int            endCol;
-    private HittableList   world;
-    private Camera         cam;
+    private ThreadListener  listener;
+    private int             startRow;
+    private int             endRow;
+    private int             startCol;
+    private int             endCol;
+    private HittableList    world;
+    private Camera          cam;
+    private boolean         exit;
 
     public Worker(int startCol, int endCol, int startRow, int endRow){        
-        this.startRow = startRow;
-        this.endRow   = endRow;
-        this.startCol = startCol;
-        this.endCol   = endCol;
+        this.startRow   = startRow;
+        this.endRow     = endRow;
+        this.startCol   = startCol;
+        this.endCol     = endCol;
+        this.exit       = false;
     }
 
     public void setData(HittableList world, Camera cam) {
-        this.world = world;
-        this.cam   = cam;
+        this.world  = world;
+        this.cam    = cam;
     }
 
     public void setListener(ThreadListener listener) {
         this.listener = listener;
+    }
+
+    public void doStop() {
+        exit = true;
     }
 
     // ray tracing logic
@@ -40,27 +46,32 @@ public class Worker implements Runnable{
         // loops over active rows, calculates output colour for each pixel
         for (int j = startRow; j < endRow; j++) {
             for (int i = startCol; i < endCol; i++) {
-                // pixel colour is defaulted as black (no light)
-                Vec3 pixelCol = new Vec3(0,0,0);
-                for (int sample = 0; sample < cam.samplesPerPixel; sample++) {
-                    // pixel collects colour of each surface the ray hits
-                    Ray r = getRay(i, j);
-                    pixelCol = pixelCol.add(rayColour(r, cam.maxBounces, world));
-                }
+                if (!exit) {
+                    // pixel colour is defaulted as black (no light)
+                    Vec3 pixelCol = new Vec3(0,0,0);
+                    for (int samp = 0; samp < cam.samplesPerPixel; samp++) {
+                        // pixel collects colour of each surface the ray hits
+                        Ray r = getRay(i, j);
+                        pixelCol = pixelCol
+                                .add(rayColour(r, cam.maxBounces, world));
+                    }
 
-                // sends normalized pixel colour to renderer to draw to screen
-                Vec3 outCol = pixelCol.multiply(1d / (double)cam.samplesPerPixel);
-                cam.sendPixelToRenderer(outCol, i, j);
+                    // sends normalized pixel colour to renderer to draw
+                    Vec3 outCol = pixelCol
+                                .multiply(1d / (double)cam.samplesPerPixel);
+                    cam.sendPixelToRenderer(outCol, i, j);
+                }
             }
         }
+
         // notifies master that job is finished
-        listener.threadComplete();
+        listener.threadComplete(this);
     }
 
     // generates jittered rays for a given pixel
     private Ray getRay(int x, int y) {
         Vec3 offset = sampleSquare();
-        
+
         Vec3 xOffset = cam.pixelDeltaU.multiply(x + offset.x());
         Vec3 yOffset = cam.pixelDeltaV.multiply(y + offset.y());
 
