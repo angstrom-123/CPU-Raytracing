@@ -9,13 +9,24 @@ import com.ang.Util.Interval;
 import com.ang.Util.Ray;
 import com.ang.Util.Vec3;
 
-/*
- * Implemented as a HittableList of Tri primitives loaded from an obj file.
+/**
+ * Compound hittables are hittables that are made of primitives (usually tris).
+ * A hittable representing a mesh that is imported from a .obj file. It is 
+ * made of tris that are held in a HittableList.
  */
 public class Mesh extends Hittable {
     private HittableList tris;
 
-    // vertex data, vertes normal data, vertex indices, normal indices
+    /**
+     * Constructs the mesh using data from a .obj file.
+     * @param vd the array containing position vectors of all verticies.
+     * @param nd the array containing vectors representing all vertex normals.
+     * @param vi the array containing sets of 3 indices of vectors from
+     *           { @param vd } to be joined into a tri.
+     * @param ni the array containing sets of 3 indices of normals from
+     *           { @param nd } to be assigned to the vertices in { @param vi }
+     * @param mat the material to be assigned to each tri in the mesh.
+     */
     public Mesh(Vec3[] vd, Vec3[] nd, int[][] vi, int[][] ni, Material mat) {
         tris = new HittableList(vi.length);
 
@@ -36,6 +47,15 @@ public class Mesh extends Hittable {
         }
     }
 
+    /**
+     * Checks for hits with the HittableList tris.
+     * @param r the ray for which to check for intersections.
+     * @param tInterval the interval of t values along the ray for which to 
+     *                  check for intersections.
+     * @param rec a HitRecord to be passed to the hittable tris held in quads.
+     * @return {@code true} if a hit is detected against any of the tris in the
+     *         in the hittable list else {@code false}.
+     */
     @Override
     public boolean hit(Ray r, Interval tInterval, HitRecord rec) {
         return tris.hit(r, tInterval, rec);

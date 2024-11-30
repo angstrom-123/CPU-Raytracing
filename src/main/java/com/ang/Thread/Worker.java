@@ -9,13 +9,12 @@ import com.ang.Util.Vec3;
 import com.ang.Camera;
 import com.ang.Global;
 
-/*
- * Workers are dispatched by the master and are used to raytrace. Each worker 
- * raytraces an individual part of the whole image and its results are 
- * consolidated in the Renderer's BufferedImage.
+/**
+ * Runnable worker to be passed to threads dispatched by the ExecutorService in
+ * the thread master.
  */
 public class Worker implements Runnable{
-    private ThreadListener  listener;
+    private ThreadListener  listener; // interface with Master
     private int             startRow;
     private int             endRow;
     private int             startCol;
@@ -24,9 +23,12 @@ public class Worker implements Runnable{
     private Camera          cam;
     private boolean         exit;
 
-    /*
-     * Workers are dispatched to calculate pixel colours between 2 sets of 
-     * coordinates. The area in which a worker is functioning is a "tile".
+    /**
+     * Constructs a worker with the dimensions of the tile it should work on.
+     * @param startCol index of the column where this worker's tile starts.
+     * @param endCol index of the column where this worker's tile ends.
+     * @param startRow index of the row where this worker's tile starts.
+     * @param endRow index of the row where this worker's tile ends.
      */
     public Worker(int startCol, int endCol, int startRow, int endRow){        
         this.startRow   = startRow;
@@ -36,35 +38,54 @@ public class Worker implements Runnable{
         this.exit       = false;
     }
 
+    /**
+     * Assigns the Camera and HittableList to be used for the render outside
+     * of the constructor for clarity.
+     * @param world the HittableList to be used for the render.
+     * @param cam the Camera to be used for the render.
+     */
     public void setData(HittableList world, Camera cam) {
         this.world  = world;
         this.cam    = cam;
     }
 
+    /**
+     * Assigns the Interface to be used to notify the Master that the tile is 
+     * complete.
+     * @param listener Interface with Master.
+     */
     public void setListener(ThreadListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Sets exit to true, interrupting the render loop.
+     */
     public void doStop() {
         exit = true;
     }
 
+    /**
+     * Loops over each pixel in the tile to render and sends rays into the 
+     * scene equal to samplesPerPixel. Each ray is then allowed to interact with
+     * hittables in the scene until maxBounces is reached. Then the colour that
+     * it has collected from each interaction is returned as the pixel colour.
+     * Master is notified when tile is complete.
+     */
     @Override
     public void run() {
         // loops over active rows, calculates output colour for each pixel
         for (int j = startRow; j < endRow; j++) {
             for (int i = startCol; i < endCol; i++) {
                 if (!exit) {
-                    // pixel colour is defaulted as black (no light)
                     Vec3 pixelCol = new Vec3(0,0,0);
                     for (int samp = 0; samp < cam.samplesPerPixel; samp++) {
-                        // pixel collects colour of each surface the ray hits
-                        Ray r = getRay(i, j);
+                        Ray r = getRay(i, j); // sub pixel sampling
                         pixelCol = pixelCol
                                    .add(rayColour(r, cam.maxBounces, world));
                     }
 
-                    // sends normalized pixel colour to renderer to draw
+                    // normalizes pixel colour.
                     Vec3 outCol = pixelCol
                                   .multiply(1d / (double)cam.samplesPerPixel);
                     cam.sendPixelToRenderer(outCol, i, j);
@@ -72,14 +93,16 @@ public class Worker implements Runnable{
             }
         }
 
-        // notifies master that job is finished
         listener.threadComplete(this);
     }
 
-    /*
-     * Generates rays with minutely jittered directions for a given pixel. This 
-     * allows for sub-pixel sampling which simulates continuity. This acts as
-     * anti-aliasing.
+    /**
+     * Generates a random ray for a given pixel. Applies slight sub-pixel 
+     * jittering to the ray direction. This acts as anti-aliasing. Also performs
+     * additional jittering on ray origin and direction for depth of field.
+     * @param x first screen space coordinate of pixel to be sampled for.
+     * @param y second screen space coordinate of pixel to be sampled for.
+     * @return new jittered Ray.
      */
     private Ray getRay(int x, int y) {
         Vec3 offset = sampleSquare();
@@ -98,44 +121,55 @@ public class Worker implements Runnable{
         return new Ray(rayOrigin, rayDirection);
     }
 
-    // generates random offsets to use for same-pixel sampling
+    /**
+     * Generates a random ray direction within a unit square centred around 0,0.
+     * This simulates the extremely high resolution of the real world.
+     * @return vector representing sampled ray direction.
+     */
     private Vec3 sampleSquare() {
         // random vector in (-0.5, -0.5) to (0.5, 0.5) unit square
         return new Vec3(Math.random() - 0.5, Math.random() - 0.5, 0.0);
     }
 
-    // recursively calculates ray colour for depth bounces
+    /**
+     * Calculates the colour of the ray after its interactions with the scene
+     * recursively.
+     * @param r the ray to be cast into the scene.
+     * @param depth the amount of remaining bounces that the ray can perform.
+     * @param world the HittableList for the ray to interact with.
+     * @return vector representing rgb colour of the ray after its bounces.
+     */
     private Vec3 rayColour(Ray r, int depth, HittableList world) {
-        // return black at bounce limit
         if (depth <= 0) {
             return new Vec3(0.0, 0.0, 0.0);        
         }
 
         HitRecord rec = new HitRecord();
 
-        // return background if ray missed the world
         if (!world.hit(r, new Interval(0.001, Global.infinity), rec)) {
             return cam.background;
         }
 
         RayTracker rt = new RayTracker();
 
-        // handles emission first
         Vec3 colFromEmission = rec.mat.emitted(rec.u, rec.v, rec.p);
         
-        // if directly hit light source, immediately return emission colour
-        if (!rec.mat.scatter(r, rec, rt)) {
+        if (!rec.mat.scatter(r, rec, rt)) { // if no scatter then it must emit
             return colFromEmission;
         }
 
-        // otherwise calculates ray colour 
         Vec3 colFromScatter = rayColour(rt.scattered, depth-1, world);
         colFromScatter = colFromScatter.multiply(rt.attenuation);
 
         return colFromEmission.add(colFromScatter);
     }
 
-    // generates random points within disk for depth of field
+    /**
+     * Generates a random ray direction within a disk of size specified by 
+     * defocusDiskU and defocusDiskV to be used for depth of field. This 
+     * simulates light hitting a camera sensor that isn't in focus.
+     * @return vector representing sampled ray direction.
+     */
     private Vec3 sampleDefocusDisk() {
         Vec3 p = Vec3.randomInUnitDisk();
         Vec3 xOffset = cam.defocusDiskU.multiply(p.x());

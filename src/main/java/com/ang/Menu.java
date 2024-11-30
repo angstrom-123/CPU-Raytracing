@@ -5,8 +5,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-/*
- * Uses java swing to display a simple menu for adjusting render settings.
+/**
+ * Creates a menu for the user to alter render parameters.
  */
 public class Menu extends JFrame {
     private Font font = new Font("dialog", Font.PLAIN, 11);
@@ -24,12 +24,18 @@ public class Menu extends JFrame {
     private JLabel[]        labels;
     private JSpinner[]      spinners;
 
+    /**
+     * Constructs the menu.
+     * @param c new ConfigHandler.
+     */
     public Menu(ConfigHandler c) {
         this.c = c;
     }
 
+    /**
+     * Initializes all elements in the menu.
+     */
     private void initElements() {
-        // initializing elements to be placed on frame
         // scene selector
         sceneLabel = new JLabel("Random balls"); 
         l1 = new JLabel("Demo scene");  
@@ -59,46 +65,46 @@ public class Menu extends JFrame {
             }
         });
 
-        // per-pixel sample count
+        // per-pixel sample count selector
         l2 = new JLabel("Samples per pixel");
         s2 = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 10));
 
-        // maximum ray bounce limit
+        // maximum ray bounce limit selector
         l3 = new JLabel("Max ray bounces");
         s3 = new JSpinner(new SpinnerNumberModel(20, 1, 500, 5));
 
-        // width of output image
+        // width of output image selector
         l4 = new JLabel("Horizontal resolution");
         s4 = new JSpinner(new SpinnerNumberModel(426, 1, 3840, 100));
 
-        // number of threads for the master to dispatch at once
+        // thread count selector
         l5 = new JLabel("Number of threads");
         s5 = new JSpinner(new SpinnerNumberModel(3, 1, 50, 1));
 
-        // width and height of tiles for the threads to work on, 0 is auto
+        // worker tile width selector
         l6 = new JLabel("Tile width (0=auto)");
         s6 = new JSpinner(new SpinnerNumberModel(0, 0, 3840, 10));
 
+        // worker tile height selector
         l7 = new JLabel("Tile height (0=auto)");
         s7 = new JSpinner(new SpinnerNumberModel(0, 0, 2160, 10));
 
         // checkbox to save file
         doSave = new JCheckBox("Save file", true);
 
-        // input fields for file path and file name
+        // input field for file path
         filePath = new JLabel("File path");
         t1 = new JTextField(12);
 
+        // input field for path name
         fileName = new JLabel("File name");
         t2 = new JTextField(12);
 
         labels = new JLabel[]{l1, l2, l3, l4, l5, l6, l7};
         spinners = new JSpinner[]{s1, s2, s3, s4, s5, s6, s7};
 
-        /* Initializing render button. When pressed, all settings are saved and
-         * applied to the camera, renderer, and master using ConfigHandler c.
-         * The thread master is instructed to begin rendering the image.
-         */
+        // render button
+        // When pressed, all settings are commited and passed to ConfigHandler.
         renderButton = new JButton("Render");
         renderButton.addActionListener(new ActionListener() {
             @Override
@@ -167,6 +173,9 @@ public class Menu extends JFrame {
         sceneLabel.setBounds(70, 15, 70, 20);
     }
 
+    /**
+     * Displays the menu.
+     */
     public void showMenu() {
         initElements();
 

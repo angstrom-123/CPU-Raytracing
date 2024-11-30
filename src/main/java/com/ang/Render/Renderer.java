@@ -14,10 +14,10 @@ import javax.imageio.*;
 import com.ang.Global;
 import com.ang.Util.Vec3;
 
-/*
+/**
  * Renderer handles displaying and saving the raytracing result. Makes use of 
  * java swing for displaying render in window. File format for saved images is
- * png by default.
+ * .png by default.
  */
 public class Renderer extends JFrame{
     private JFrame          frame = new JFrame();
@@ -28,6 +28,11 @@ public class Renderer extends JFrame{
     private int             height;
     private boolean         initDone;
 
+    /**
+     * Constructs the renderer with given dimensions.
+     * @param w the width of the image to be displayed in the renderer.
+     * @param h the height of the image to be displayed in the renderer.
+     */
     public Renderer(int w, int h) {
         width       = w;
         height      = h;
@@ -36,14 +41,23 @@ public class Renderer extends JFrame{
         initDone    = false;
     }
 
+    /**
+     * @return the width of the image to be rendered to.
+     */
     public int getImageWidth() {
         return width;
     }
 
+    /**
+     * @return the height of the image to be rendered to.
+     */
     public int getImageHeight() {
         return height;
     }
 
+    /**
+     * Initializes the JFrame and ImagePanel.
+     */
     private void initWindow() {
         imgPanel.setPreferredSize(new Dimension(width, height));
         frame.getContentPane().add(imgPanel);
@@ -51,11 +65,7 @@ public class Renderer extends JFrame{
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-        /* 
-         * if the window is closed, the thread master is instructed to terminate
-         * all current threads. The frame is then disposed of.
-         */
+ 
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 Global.terminateThreads();
@@ -67,11 +77,13 @@ public class Renderer extends JFrame{
         imgPanel.requestFocusInWindow();
     }
 
-    /*
-     * Writes an rgb colour value to the screen space coordinates (x, y). The 
-     * unitColour passed in should be a colour vector (containing rgb for xyz).
-     * unitColour should be normalized to the range (0,1) and be in linear 
-     * colour space.
+    /**
+     * Writes to the BufferedImage in the ImagePanel.
+     * @param unitColour the vector holding rgb values for the pixel to be
+     *                   written. Normalized in the range (0,1). In linear 
+     *                   colour-space.
+     * @param x first screen-space coordinate of the pixel to be written.
+     * @param y second screen-space coordinate of the pixel to be written.
      */
     public void writePixel(Vec3 unitColour, int x, int y) {
         if (!initDone) {
@@ -95,25 +107,33 @@ public class Renderer extends JFrame{
         gComponent = gComponent > 255 ? gComponent = 255 : gComponent;
         bComponent = bComponent > 255 ? bComponent = 255 : bComponent;
 
-        /*
-         * BufferedImage accepts pixel colour as a single integer storing all
-         * component colours. Each component is 2 bytes in the order alpha, red,
-         * green, blue. col is the rgb value in this representation.
-         */
+        
+        // BufferedImage accepts pixel colour as a single integer storing all
+        // component colours. Each component is 2 bytes in the order alpha, red,
+        // green, blue. col is the rgb value in this representation.
+        
         int col = (rComponent << 16) | (gComponent << 8) | bComponent;
         img.setRGB(x, y, col);
 
-        /*
-         * Redrawing the frame every time a pixel is drawn hurts the performance
-         * of the program. I opt to do this anyway for aesthetic purposes.
-         */
+        
+        // Redrawing the frame every time a pixel is drawn hurts the performance
+        // of the program. I opt to do this anyway for aesthetic purposes.
+        
         frame.repaint();
     }
 
+    /**
+     * Redraws the screen.
+     */
     public void drawScreen() {
         frame.repaint();
     }
 
+    /**
+     * Converts a value from linear colour-space to gamme-space.
+     * @param linearComponent the value of the rgb component to be converted.
+     * @return the gamma-space component.
+     */
     private double linearToGamma(double linearComponent) {
         if (linearComponent > 0) {
             return Math.sqrt(linearComponent);
@@ -121,12 +141,15 @@ public class Renderer extends JFrame{
         return 0;
     }
 
+    /**
+     * Attempts to save the rendered image.
+     * @param path the path to which to save the image.
+     * @param name the name to be assigned to the image upon saving.
+     */
     public void saveFile(String path, String name) {
-        /*
-         * If the path is undefined then the renders directory is searched for
-         * in common locaitons. If it is not found, the file will be saved in 
-         * the cwd.
-         */
+        // If the path is undefined then the renders directory is searched for
+        // in common locaitons. If it is not found, the file will be saved in 
+        // the cwd.
         if ((path == null) || (path.length() < 1)) {
             String[] prefixes = new String[]{
                 "/",

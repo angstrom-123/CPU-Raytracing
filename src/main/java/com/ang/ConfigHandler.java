@@ -19,20 +19,26 @@ import com.ang.Util.Interval;
 import com.ang.Util.OBJImporter;
 import com.ang.Util.Vec3;
 
-/*
- * Accessed by Menu.java to apply settings to camera, renderer, and thread 
- * master. Also allows for initialization of demo scenes
+/**
+ * Sets up the world to be rendered using parameters from the menu.
  */
 public class ConfigHandler {
     private Camera cam;
     private HittableList world;
 
+    /**
+     * Constructs a new handler, creates a new camera and initializes the thread
+     * master.
+     */
     public ConfigHandler() {
         cam = new Camera();
-        // world = new HittableList(2000);
         Global.master = new Master(cam, world);
     }
 
+    /**
+     * Initializes the camera, assigns parameters to the master and begins 
+     * rendering the scene.
+     */
     public void callRender() {
         if (Global.master.renderDone) {
             cam.init();
@@ -41,10 +47,22 @@ public class ConfigHandler {
         }
     }
 
+    /**
+     * Configures the output of the render, sends info to master.
+     * @param path the path to which to save the image.
+     * @param name the name to be assigned to the image upon saving.
+     * @param save boolean, should image be saved?
+     */
     public void configFile(String path, String name, boolean save) {
         Global.master.setSavePath(path, name, save);
     }
 
+    /**
+     * Configures the thread master.
+     * @param threadNum the amount of threads used to render the scene.
+     * @param tileX the width of the tiles for each worker to render.
+     * @param tileY the height of the tiles for each worker to render.
+     */
     public void configThreads(int threadNum, int tileX, int tileY) {
         if (Global.master.renderDone) {
             Global.master.setThreadCount(threadNum);
@@ -52,6 +70,12 @@ public class ConfigHandler {
         }
     }
 
+    /**
+     * Configures the camera.
+     * @param imageWidth the width of the rendered image.
+     * @param samplesPerPixel amount of rays to send into the scene per pixel.
+     * @param maxBounces max amount of interactions rays can have in the world.
+     */
     public void configCam(int imageWidth, int samplesPerPixel, int maxBounces) {
         if (Global.master.renderDone) {
             cam.imageWidth      = imageWidth;
@@ -60,6 +84,11 @@ public class ConfigHandler {
         }
     }
 
+    /**
+     * Initializes the scene to be rendered. Changes camera settings and adds
+     * hittables to the world.
+     * @param sceneNum index of the demo scene to render.
+     */
     public void setScene(int sceneNum) {
         if (Global.master.renderDone) {
             switch (sceneNum) {
@@ -84,9 +113,10 @@ public class ConfigHandler {
         }
     }
 
-    /*
-     * 3 balls in focus (one diffuse, one glass, one metallic) surrounded by
-     * smaller randomly placed and coloured balls on a gray ground. 
+    /**
+     * Initializes scene 1.
+     * Scene with 3 balls in focus (one diffuse, one glass, one metallic) 
+     * surrounded by smaller randomly placed and coloured balls on gray ground. 
      */
     private void scene1() {
         world = new HittableList(500);
@@ -143,10 +173,11 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
-    /*
-     * Model of chess knight in glass beside a large reflective sphere, 
-     * surrounded by smaller, randomly placed and coloured balls on a checkered
-     * ground.
+    /**
+     * Initializes scene 2.
+     * Scene with a model of a chess knight in glass beside a large reflective 
+     * sphere, surrounded by smaller, randomly placed and coloured balls on a 
+     * checkered ground.
      */
     private void scene2() {
         world = new HittableList(500);
@@ -212,8 +243,10 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
-    /*
-     * Sphere with a texture applies to look like the Earth on a sku backdrop.
+    /**
+     * Initializes scene 3.
+     * Scene with a sphere with a texture applied to look like the Earth on a 
+     * sky background.
      */
     private void scene3() {
         world = new HittableList(100);
@@ -236,9 +269,10 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
-    /* 
-     * Glass chess knight on checkered ground with emmissive sphere behind 
-     * it as the only light source. 
+    /**
+     * Initializes scene 4.
+     * Scene with a glass chess knight on checkered ground with emmissive sphere 
+     * behind it as the only light source. 
      */
     private void scene4() {
         world = new HittableList(2000);
@@ -271,10 +305,11 @@ public class ConfigHandler {
         world.add(new BVHNode(world));
     }
 
-    /*
-     * Cornell box. Cube shaped room with white, green, and red walls containing
-     * 2 boxes of different heights and orientations illuminated by a single 
-     * rectangular light at the top.
+    /**
+     * Initializes scene 5.
+     * Scene with a Cornell box. Cube shaped room with white, green, and red 
+     * walls containing 2 boxes of different heights and orientations 
+     * illuminated by a single rectangular light at the top.
      */
     private void scene5() {
         world = new HittableList(500);
