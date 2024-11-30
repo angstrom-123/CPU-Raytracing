@@ -13,7 +13,7 @@ Requires an installation of at least JDK-21.
 
 Executable .jar file can be found in the target directory.
 
-**IMPORTANT : By default, renders are saved in the renders folder. For renders to be saved there you must be connected to the main project directory (not target) when running the .jar.**
+**Note: By default, renders will attempt to save in the renders folder. If the folder cannot be found then the output will be saved in the same directory that the .jar is run from.**
 
 ## Config
 **Samples:**
