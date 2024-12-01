@@ -13,7 +13,7 @@ Requires an installation of at least JDK-21.
 
 Executable .jar file can be found in the target directory.
 
-**IMPORTANT : By default, renders are saved in the renders folder. For renders to be saved there you must be connected to the main project directory (not target) when running the .jar.**
+**Note: By default, renders will attempt to save in the renders folder. If the folder cannot be found then the output will be saved in the same directory that the .jar is run from.**
 
 ## Config
 **Samples:**
@@ -28,7 +28,7 @@ Preliminary tests have shown that, on powerful computers, thread count should be
 **Tiling:**
 Tile width should be left at auto to take up whole image as this improves performance due to better cache efficiency. Tile height has little effect on rendering speed.
 
-![configMenu](https://github.com/user-attachments/assets/6a593dda-9089-4953-b2d3-25a90194f1bb)
+![configMenu](https://github.com/user-attachments/assets/e64ebafa-d965-44f5-941a-50e41388c789)
 ## Demos
 **Note: times to render are taken from my computer and are only useful as a comparison between demos.**
 
