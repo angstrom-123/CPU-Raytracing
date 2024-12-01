@@ -5,12 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.ang</groupId>
-  <artifactId>raytrace</artifactId>
+  <artifactId>CPURaytracer</artifactId>
   <version>1</version>
 
-  <name>raytrace</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <name>CPURaytracer</name>
+  <url>https://github.com/angstrom-123/CPU-Raytracing</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
