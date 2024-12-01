@@ -28,7 +28,7 @@ Preliminary tests have shown that, on powerful computers, thread count should be
 **Tiling:**
 Tile width should be left at auto to take up whole image as this improves performance due to better cache efficiency. Tile height has little effect on rendering speed.
 
-![configMenu](https://github.com/user-attachments/assets/6a593dda-9089-4953-b2d3-25a90194f1bb)
+![configMenu](https://github.com/user-attachments/assets/e64ebafa-d965-44f5-941a-50e41388c789)
 ## Demos
 **Note: times to render are taken from my computer and are only useful as a comparison between demos.**
 
