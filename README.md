@@ -11,9 +11,7 @@ Toy CPU path tracer written entirely in Java.
 ## Running
 Requires an installation of at least JDK-21.
 
-Executable .jar file can be found in the target directory.
-
-**Note: By default, renders will attempt to save in the renders folder. If the folder cannot be found then the output will be saved in the same directory that the .jar is run from.**
+By default, rendered images will attempt to save to a "renders" folder in the current or nearby directory. If this is not found, the default location is the cwd.
 
 ## Config
 **Samples:**
