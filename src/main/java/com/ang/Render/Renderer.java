@@ -162,7 +162,7 @@ public class Renderer extends JFrame{
             int i = 0;
             while (true) {
                 if (i >= prefixes.length) {
-                    path = "."; // cwd
+                    path = "";
                     break;
                 }
                 String prefix = prefixes[i];
@@ -177,8 +177,9 @@ public class Renderer extends JFrame{
             path = path + "/"; // last character of path must be a /
         }
 
+        String randomName = String.valueOf(Math.random()).substring(2);
         if ((name == null) || (name.length() < 1)) {
-            name = String.valueOf(Math.random()).substring(2); // random name
+            name = randomName;
         }
 
         try {
@@ -186,6 +187,12 @@ public class Renderer extends JFrame{
         } catch (IOException e) {
             System.out.println("Exception in save file");
             e.printStackTrace();
+            try {
+                ImageIO.write(img, "png", new File(path + randomName + ".png"));
+            } catch (IOException f) {
+                System.out.println("Exception in backup save");
+                f.printStackTrace();
+            }
         }  
     }
 }
